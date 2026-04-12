@@ -1,3 +1,19 @@
-<main>
-    <router-outlet></router-outlet>
-</main>
+<div class="main-wrapper d-flex">
+    <aside *ngIf="isLoggedIn" class="sidebar-container bg-dark text-light shadow-lg">
+        <app-sidebar></app-sidebar>
+    </aside>
+
+    <div class="content-area flex-grow-1 bg-light">
+        <header *ngIf="isLoggedIn"
+            class="top-header bg-white border-bottom px-4 py-2 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold text-secondary mb-0">{{ currentPageTitle }}</h5>
+            <div class="user-pill bg-light border rounded-pill px-3 py-1 small fw-bold">
+                <i class="bi bi-person-circle me-1"></i> {{ user.nombre }}
+            </div>
+        </header>
+
+        <main class="p-4">
+            <router-outlet></router-outlet>
+        </main>
+    </div>
+</div>

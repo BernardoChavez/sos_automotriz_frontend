@@ -1,12 +1,19 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+export class AppComponent {
+  isLoggedIn: boolean = false;
+  currentPageTitle: string = 'Panel de Control';
+  user: any = null;
 
-@Component({
-  selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.html',
-  styleUrl: './app.scss'
-})
-export class App {
-  protected readonly title = signal('sos-automotriz-front');
+  constructor() {
+    this.checkLogin();
+  }
+
+  checkLogin() {
+    const data = localStorage.getItem('user');
+    if (data) {
+      this.isLoggedIn = true;
+      this.user = JSON.parse(data);
+    } else {
+      this.isLoggedIn = false;
+    }
+  }
 }

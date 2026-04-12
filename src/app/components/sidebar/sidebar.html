@@ -1,0 +1,46 @@
+<div class="sidebar d-flex flex-column p-3 text-white">
+    <div class="logo-section mb-4 px-2 d-flex align-items-center">
+        <div class="logo-icon bg-primary rounded-3 me-2 d-flex align-items-center justify-content-center"
+            style="width: 35px; height: 35px;">
+            <i class="bi bi-tools fs-5"></i>
+        </div>
+        <span class="fs-5 fw-bold tracking-tight">SOS <span class="text-primary">AUTO</span></span>
+    </div>
+
+    <hr class="opacity-25 mb-4">
+
+    <ul class="nav nav-pills flex-column mb-auto">
+        <ng-container *ngFor="let item of menuItems">
+            <li class="nav-item" *ngIf="canSee(item)">
+                <a [routerLink]="item.link" routerLinkActive="active-link" class="nav-link d-flex align-items-center">
+                    <i [class]="'bi ' + item.icon + ' me-3 fs-5'"></i>
+                    <span class="menu-label">{{ item.label }}</span>
+                </a>
+            </li>
+        </ng-container>
+    </ul>
+
+    <hr class="opacity-25">
+
+    <div class="user-footer dropdown">
+        <a href="#"
+            class="d-flex align-items-center text-white text-decoration-none dropdown-toggle px-2 py-1 rounded-3 hover-effect"
+            data-bs-toggle="dropdown">
+            <img [src]="'https://ui-avatars.com/api/?background=0D6EFD&color=fff&name=' + user?.nombre" width="32"
+                height="32" class="rounded-circle me-2">
+            <div class="d-flex flex-column overflow-hidden">
+                <span class="fw-bold small text-truncate" style="max-width: 140px;">{{ user?.nombre }}</span>
+                <span class="text-muted" style="font-size: 0.7rem;">{{ user?.rol | uppercase }}</span>
+            </div>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-dark shadow border-0 p-2 mt-2 rounded-4">
+            <li><a class="dropdown-item rounded-3 mb-1" routerLink="/perfil"><i class="bi bi-person me-2"></i>
+                    Ajustes</a></li>
+            <li>
+                <hr class="dropdown-divider opacity-25">
+            </li>
+            <li><button (click)="logout()" class="dropdown-item text-danger rounded-3"><i
+                        class="bi bi-door-open me-2"></i> Cerrar Sesión</button></li>
+        </ul>
+    </div>
+</div>
