@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { NavbarComponent } from '../../navbar/navbar';
-import { environment } from '../../../../environments'; // Agregado
+import { environment } from '../../../../environments';
 
 @Component({
   selector: 'app-dashboard-taller',
@@ -15,6 +15,7 @@ export class DashboardTallerComponent implements OnInit {
   adminInfo: any = null;
   tallerInfo: any = null;
   tecnicos: any[] = [];
+  mensajeExito: string = ''; // Para feedback visual
 
   nuevoTecnico = {
     nombre: '',
@@ -26,7 +27,6 @@ export class DashboardTallerComponent implements OnInit {
     taller_id: null as number | null
   };
 
-  // URLs Vinculadas
   private apiUsuarios = `${environment.apiUrl}/usuarios`;
   private apiTalleres = `${environment.apiUrl}/talleres`;
 
@@ -54,6 +54,19 @@ export class DashboardTallerComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => console.error("Error al cargar taller:", err)
+    });
+  }
+
+  // --- CU 7: ACTUALIZAR CONFIGURACIÓN COMPLETA ---
+  actualizarConfiguracion() {
+    this.http.put(`${this.apiTalleres}/${this.adminInfo.taller_id}`, this.tallerInfo).subscribe({
+      next: (res: any) => {
+        this.mensajeExito = 'Configuración guardada correctamente.';
+        this.tallerInfo = res;
+        this.cdr.detectChanges();
+        setTimeout(() => this.mensajeExito = '', 3000);
+      },
+      error: (err) => alert("No se pudo actualizar la configuración del taller")
     });
   }
 
