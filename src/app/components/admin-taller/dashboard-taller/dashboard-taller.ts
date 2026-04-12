@@ -15,7 +15,7 @@ export class DashboardTallerComponent implements OnInit {
   adminInfo: any = null;
   tallerInfo: any = null;
   tecnicos: any[] = [];
-  mensajeExito: string = ''; // Para feedback visual
+  mensajeExito: string = '';
 
   nuevoTecnico = {
     nombre: '',
@@ -57,7 +57,7 @@ export class DashboardTallerComponent implements OnInit {
     });
   }
 
-  // --- CU 7: ACTUALIZAR CONFIGURACIÓN COMPLETA ---
+  // --- CU 7: ACTUALIZAR CONFIGURACIÓN DEL TALLER ---
   actualizarConfiguracion() {
     this.http.put(`${this.apiTalleres}/${this.adminInfo.taller_id}`, this.tallerInfo).subscribe({
       next: (res: any) => {
@@ -103,32 +103,22 @@ export class DashboardTallerComponent implements OnInit {
         this.obtenerMisTecnicos();
         this.limpiarFormulario();
       },
-      error: (err) => {
-        const msg = err.error?.detail || "Error en el servidor";
-        alert('No se pudo registrar: ' + msg);
-      }
+      error: (err) => alert('No se pudo registrar: ' + (err.error?.detail || 'Error'))
     });
   }
 
   eliminarUsuario(id: number) {
     if (confirm('¿Deseas eliminar a este técnico?')) {
       this.http.delete(`${this.apiUsuarios}/${id}`).subscribe({
-        next: () => {
-          this.obtenerMisTecnicos();
-          alert('Técnico eliminado.');
-        }
+        next: () => this.obtenerMisTecnicos()
       });
     }
   }
 
   limpiarFormulario() {
     this.nuevoTecnico = {
-      nombre: '',
-      email: '',
-      password: '',
-      telefono: '',
-      rol: 'tecnico',
-      especialidad_principal: 'Mecánica General',
+      nombre: '', email: '', password: '', telefono: '',
+      rol: 'tecnico', especialidad_principal: 'Mecánica General',
       taller_id: this.adminInfo.taller_id
     };
   }
