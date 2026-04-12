@@ -1,0 +1,113 @@
+<app-navbar></app-navbar>
+
+<div class="container mt-5">
+    <h2 class="fw-bold mb-4 text-dark"><i class="bi bi-shield-lock-fill text-primary"></i> Panel de Super Admin</h2>
+
+    <ul class="nav nav-pills mb-4 shadow-sm p-2 bg-white rounded-pill" style="width: fit-content;">
+        <li class="nav-item">
+            <button class="nav-link rounded-pill" [class.active]="pestanaActiva === 'talleres'"
+                (click)="pestanaActiva = 'talleres'">
+                <i class="bi bi-building"></i> Talleres (CU 5)
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link rounded-pill" [class.active]="pestanaActiva === 'usuarios'"
+                (click)="pestanaActiva = 'usuarios'">
+                <i class="bi bi-people"></i> Admins de Taller (CU 2)
+            </button>
+        </li>
+    </ul>
+
+    <div *ngIf="pestanaActiva === 'talleres'">
+        <div class="card shadow-sm border-0 p-4 mb-4 bg-light rounded-4 text-dark">
+            <h5 class="fw-bold mb-3 text-primary">Registrar Nuevo Taller</h5>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <input [(ngModel)]="nuevoTaller.nombre" class="form-control" placeholder="Nombre del Taller">
+                </div>
+                <div class="col-md-4">
+                    <input [(ngModel)]="nuevoTaller.direccion" class="form-control" placeholder="Dirección">
+                </div>
+                <div class="col-md-4">
+                    <input [(ngModel)]="nuevoTaller.especialidad" class="form-control" placeholder="Especialidad">
+                </div>
+                <div class="col-md-3">
+                    <input type="number" [(ngModel)]="nuevoTaller.latitud" class="form-control" placeholder="Latitud">
+                </div>
+                <div class="col-md-3">
+                    <input type="number" [(ngModel)]="nuevoTaller.longitud" class="form-control" placeholder="Longitud">
+                </div>
+                <div class="col-md-3">
+                    <input [(ngModel)]="nuevoTaller.telefono" class="form-control" placeholder="Teléfono">
+                </div>
+                <div class="col-md-3">
+                    <button (click)="guardarTaller()" class="btn btn-primary w-100 fw-bold rounded-pill shadow-sm">
+                        <i class="bi bi-check-circle"></i> Guardar Taller
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-dark">
+                    <tr class="text-center">
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Especialidad</th>
+                        <th>Ubicación</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody class="text-center">
+                    <tr *ngFor="let t of talleres">
+                        <td>{{ t.id }}</td>
+                        <td class="fw-bold text-dark">{{ t.nombre }}</td>
+                        <td>{{ t.especialidad }}</td>
+                        <td class="small">{{ t.latitud }}, {{ t.longitud }}</td>
+                        <td>
+                            <span class="badge rounded-pill" [ngClass]="t.esta_activo ? 'bg-success' : 'bg-danger'">
+                                {{ t.esta_activo ? 'Activo' : 'Inactivo' }}
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div *ngIf="pestanaActiva === 'usuarios'" class="card border-0 shadow-lg rounded-4 p-4 text-dark">
+        <h5 class="fw-bold mb-4 text-primary"><i class="bi bi-person-plus-fill"></i> Vincular Administrador a Taller
+        </h5>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label fw-bold small">Nombre Completo</label>
+                <input [(ngModel)]="nuevoAdmin.nombre" class="form-control" placeholder="Ej: Juan Perez">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-bold small">Correo Electrónico</label>
+                <input [(ngModel)]="nuevoAdmin.email" class="form-control" placeholder="admin@ejemplo.com">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-bold small">Contraseña</label>
+                <input type="password" [(ngModel)]="nuevoAdmin.password" class="form-control">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-bold small">Teléfono</label>
+                <input [(ngModel)]="nuevoAdmin.telefono" class="form-control">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-bold small">Asignar a Taller</label>
+                <select [(ngModel)]="nuevoAdmin.taller_id" class="form-select">
+                    <option [ngValue]="null" disabled selected>Seleccione un taller...</option>
+                    <option *ngFor="let t of talleres" [value]="t.id">{{ t.nombre }} ({{ t.especialidad }})</option>
+                </select>
+            </div>
+            <div class="col-12 mt-4">
+                <button (click)="registrarAdminTaller()" class="btn btn-dark w-100 fw-bold rounded-pill p-3 shadow">
+                    <i class="bi bi-shield-check"></i> CREAR Y VINCULAR ADMINISTRADOR
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

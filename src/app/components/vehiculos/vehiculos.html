@@ -1,0 +1,76 @@
+<app-navbar></app-navbar>
+
+<div class="container pb-5">
+    <h2 class="fw-bold mb-4">🚗 Mis Vehículos</h2>
+
+    <div class="card p-4 mb-4 shadow-sm border-0 rounded-4 bg-white text-dark">
+        <h6 class="fw-bold mb-3 text-muted small uppercase">Registrar Nuevo Vehículo</h6>
+        <div class="row g-2">
+            <div class="col-md-2"><input [(ngModel)]="nuevo.placa" class="form-control" placeholder="Placa"></div>
+            <div class="col-md-2"><input [(ngModel)]="nuevo.marca" class="form-control" placeholder="Marca"></div>
+            <div class="col-md-2"><input [(ngModel)]="nuevo.modelo" class="form-control" placeholder="Modelo"></div>
+            <div class="col-md-2"><input [(ngModel)]="nuevo.color" class="form-control" placeholder="Color"></div>
+            <div class="col-md-2"><input type="number" [(ngModel)]="nuevo.anio" class="form-control" placeholder="Año">
+            </div>
+            <div class="col-md-2">
+                <button (click)="guardar()" class="btn btn-primary w-100 fw-bold rounded-pill">Agregar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive shadow-sm rounded-4 text-center">
+        <table class="table table-hover bg-white mb-0 align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Placa</th>
+                    <th>Marca / Modelo</th>
+                    <th>Color</th>
+                    <th>Año</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let v of vehiculos">
+                    <td class="fw-bold text-primary">{{ v.placa }}</td>
+                    <td>{{ v.marca }} - {{ v.modelo }}</td>
+                    <td><span class="badge bg-light text-dark border">{{ v.color || 'N/A' }}</span></td>
+                    <td>{{ v.anio }}</td>
+                    <td>
+                        <button (click)="eliminar(v.id)" class="btn btn-outline-danger btn-sm border-0">
+                            <i class="bi bi-trash3-fill"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="modalPerfil" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered text-dark">
+        <div class="modal-content border-0 shadow" style="border-radius: 20px;">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="fw-bold">Configuración de Perfil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <i class="bi bi-person-circle text-secondary mb-3" style="font-size: 4rem;"></i>
+                <div class="text-start">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Nombre Completo</label>
+                        <input [(ngModel)]="perfil.nombre" class="form-control rounded-3">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Teléfono</label>
+                        <input [(ngModel)]="perfil.telefono" class="form-control rounded-3">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" (click)="actualizarPerfil()" class="btn btn-dark rounded-pill px-4"
+                    data-bs-dismiss="modal">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
