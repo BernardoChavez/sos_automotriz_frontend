@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { NavbarComponent } from '../navbar/navbar';
-import { environment } from '../../../environments'; // Agregado
+import { environment } from '../../../environments';
 
 @Component({
   selector: 'app-vehiculos',
@@ -18,7 +18,6 @@ export class VehiculosComponent implements OnInit {
   nuevo = { placa: '', marca: '', modelo: '', color: '', anio: 2026 };
   perfil = { nombre: '', telefono: '' };
 
-  // URL Vinculada
   private apiUrl = `${environment.apiUrl}/usuarios`;
 
   constructor(
@@ -28,6 +27,10 @@ export class VehiculosComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.cargarDatosUsuario();
+  }
+
+  cargarDatosUsuario() {
     const userData = localStorage.getItem('user');
     if (userData) {
       this.user = JSON.parse(userData);
@@ -71,24 +74,24 @@ export class VehiculosComponent implements OnInit {
   }
 
   actualizarPerfil() {
+    // Usamos el esquema UsuarioUpdate del backend: solo enviamos lo necesario
     const payload = {
       nombre: this.perfil.nombre,
-      email: this.user.email,
-      password: "",
-      telefono: this.perfil.telefono,
-      rol: this.user.rol,
-      taller_id: this.user.taller_id,
-      especialidad_principal: "Ninguna"
+      telefono: this.perfil.telefono
     };
 
     this.http.put(`${this.apiUrl}/${this.user.id}`, payload).subscribe({
       next: (res: any) => {
-        alert('Perfil actualizado');
-        localStorage.setItem('user', JSON.stringify(res));
-        this.user = res;
-        this.cdr.detectChanges();
+        alert('Perfil actualizado con éxito');
+
+        // Actualizamos el objeto local mezclando los datos nuevos
+        const usuarioActualizado = { ...this.user, ...res };
+        localStorage.setItem('user', JSON.stringify(usuarioActualizado));
+
+        // Recargamos para que el Navbar refleje el cambio de nombre de inmediato
+        window.location.reload();
       },
-      error: (err) => alert('Error al actualizar')
+      error: (err) => alert('Error al actualizar el perfil')
     });
   }
 
