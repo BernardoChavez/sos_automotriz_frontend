@@ -16,26 +16,49 @@ export class ConfiguracionTallerComponent implements OnInit {
   private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef);
 
-  taller: any = null;
+  taller: any = {
+    nombre: '',
+    telefono: '',
+    direccion: '',
+    especialidad: '',
+    capacidad_teorica: 5,
+    esta_activo: true,
+    horarios_atencion: {}
+  };
   loading = true;
 
   diasSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
   ngOnInit() {
-    this.cargarDatos();
+    if (this.authService.currentUser) {
+        this.cargarDatos();
+    } else {
+        setTimeout(() => this.cargarDatos(), 500);
+    }
   }
 
   cargarDatos() {
-    const tallerId = this.authService.currentUser?.taller_id;
-    if (!tallerId) return;
+    const id = this.authService.currentUser?.taller_id;
+    if (!id) {
+        console.error("No se encontró ID de taller");
+        this.loading = false;
+        return;
+    }
 
-    this.http.get(`${environment.apiUrl}/talleres/${tallerId}`).subscribe({
+    const url = `${environment.apiUrl}/talleres/${id}`;
+    console.log("Cargando datos de taller desde:", url);
+
+    this.http.get(url).subscribe({
       next: (data) => {
         this.taller = data;
-        // Inicializar horarios si están vacíos
-        if (!this.taller.horarios_atencion) {
-            this.taller.horarios_atencion = { Lunes: '08:00 - 18:00' };
+        if (!this.taller.horarios_atencion || Object.keys(this.taller.horarios_atencion).length === 0) {
+            this.taller.horarios_atencion = {};
+            this.diasSemana.forEach(d => this.taller.horarios_atencion[d] = '08:00 - 18:00');
         }
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
         this.loading = false;
         this.cdr.detectChanges();
       }
@@ -43,12 +66,17 @@ export class ConfiguracionTallerComponent implements OnInit {
   }
 
   guardar() {
-    const tallerId = this.authService.currentUser?.taller_id;
-    this.http.put(`${environment.apiUrl}/talleres/${tallerId}`, this.taller).subscribe({
+    const id = this.authService.currentUser?.taller_id;
+    if (!id) return;
+
+    const url = `${environment.apiUrl}/talleres/${id}`;
+    console.log("Guardando cambios en taller:", url);
+
+    this.http.put(url, this.taller).subscribe({
       next: () => {
         alert('Configuración guardada exitosamente');
       },
-      error: () => alert('Error al guardar configuración')
+      error: (err) => alert('Error al guardar: ' + (err.error?.detail || 'Fallo'))
     });
   }
 }

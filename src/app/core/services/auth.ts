@@ -67,6 +67,12 @@ export class AuthService {
     this.router.navigate(['/auth/login']);
   }
 
+  updateStoredUser(user: any) {
+    const updated = { ...this.currentUser, ...user };
+    localStorage.setItem('user_data', JSON.stringify(updated));
+    this.userSubject.next(updated);
+  }
+
   refreshUser() {
     return this.http.get<any>(`${this.apiUrl}/me`).pipe(
       tap(user => {

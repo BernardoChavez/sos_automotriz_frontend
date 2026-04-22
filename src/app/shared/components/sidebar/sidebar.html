@@ -44,10 +44,14 @@
         </a>
       </li>
   
-      <li class="list-none" *ngIf="authService.hasPermission('tecnico.operar')">
+      <div class="px-4 mt-6 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest" *ngIf="authService.currentUser?.rol === 'admin_taller'">
+        Gestión Taller
+      </div>
+
+      <li class="list-none" *ngIf="authService.hasPermission('tecnicos.ver') || authService.currentUser?.rol === 'tecnico'">
         <a routerLink="/dashboard/taller/tecnicos" routerLinkActive="active" class="nav-link">
-          <i class="bi bi-tools"></i>
-          <span>Mis Técnicos</span>
+          <i class="bi" [ngClass]="authService.currentUser?.rol === 'tecnico' ? 'bi-activity' : 'bi-wrench-adjustable'"></i>
+          <span>{{ authService.currentUser?.rol === 'tecnico' ? 'Mi Estado' : 'Mis Técnicos' }}</span>
         </a>
       </li>
 
@@ -55,6 +59,14 @@
         <a routerLink="/dashboard/taller/configuracion" routerLinkActive="active" class="nav-link">
           <i class="bi bi-sliders"></i>
           <span>Configuración</span>
+        </a>
+      </li>
+
+      <div class="px-4 mt-6 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Cuenta</div>
+      <li class="list-none">
+        <a routerLink="/dashboard/perfil" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-person-circle"></i>
+          <span>Mi Perfil</span>
         </a>
       </li>
     </nav>

@@ -1,35 +1,29 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
-import { environment } from '../../../environments';
+import { Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class TecnicosService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/tecnicos`;
+  private apiUrl = 'http://localhost:8000/tecnicos';
 
-  getTecnicos(tallerId?: number) {
-    const url = tallerId 
-      ? `${environment.apiUrl}/usuarios/taller/${tallerId}/tecnicos`
-      : `${environment.apiUrl}/tecnicos/`;
-    
-    console.log('Solicitando técnicos desde:', url);
-    return this.http.get<any[]>(url).pipe(
-      tap(data => console.table(data))
-    );
+  // --- VISTA TÉCNICO ---
+  getMiPerfil(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/perfil`);
   }
 
-  crearTecnico(tecnico: any) {
-    return this.http.post<any>(this.apiUrl, tecnico);
+  updateMiPerfil(data: any): Observable<any> {
+    console.log('Actualizando perfil técnico:', data);
+    return this.http.put(`${this.apiUrl}/perfil`, data);
   }
 
-  toggleDisponibilidad(id: number, disponible: boolean) {
-    return this.http.patch<any>(`${this.apiUrl}/${id}/disponibilidad?disponible=${disponible}`, {});
+  // --- VISTA ADMIN ---
+  getTecnicos(tallerId?: number): Observable<any[]> {
+    const url = tallerId ? `http://localhost:8000/usuarios/taller/${tallerId}/tecnicos` : this.apiUrl;
+    return this.http.get<any[]>(url);
   }
 
-  eliminarTecnico(id: number) {
-    return this.http.delete<any>(`${this.apiUrl}/${id}`);
+  toggleDisponibilidad(usuarioId: number, disponible: boolean): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${usuarioId}/disponibilidad?disponible=${disponible}`, {});
   }
 }

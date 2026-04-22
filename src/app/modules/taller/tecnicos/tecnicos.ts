@@ -13,23 +13,58 @@ import { UsuariosService } from '../../../core/services/usuarios';
 })
 export class TecnicosComponent implements OnInit {
   private tecnicosService = inject(TecnicosService);
-  private authService = inject(AuthService);
+  public authService = inject(AuthService);
   private usuariosService = inject(UsuariosService);
   private cdr = inject(ChangeDetectorRef);
   
+  get esTecnico(): boolean {
+    return this.authService.currentUser?.rol === 'tecnico';
+  }
+
   get esSuperAdmin(): boolean {
     return this.authService.currentUser?.rol === 'super_admin';
   }
   
   tecnicos: any[] = [];
-  tallerId = this.authService.currentUser?.taller_id;
+  miPerfil: any = { especialidad_principal: '', disponible: false };
   mostrarModal = false;
   nuevoTecnico = { nombre: '', email: '', password: '', rol: 'tecnico' };
 
-  ngOnInit() { this.cargarTecnicos(); }
+  ngOnInit() {
+    // Aseguramos que el usuario esté cargado
+    if (this.authService.currentUser) {
+        this.inicializar();
+    } else {
+        // Si no está cargado, esperamos un poco (fallback)
+        setTimeout(() => this.inicializar(), 500);
+    }
+  }
+
+  inicializar() {
+    if (this.esTecnico) {
+      this.cargarMiPerfil();
+    } else {
+      this.cargarTecnicos();
+    }
+  }
+
+  cargarMiPerfil() {
+    this.tecnicosService.getMiPerfil().subscribe((data: any) => {
+      this.miPerfil = data;
+      this.cdr.detectChanges();
+    });
+  }
+
+  guardarMiPerfil() {
+    this.tecnicosService.updateMiPerfil(this.miPerfil).subscribe(() => {
+      alert('Perfil actualizado correctamente');
+      this.cdr.detectChanges();
+    });
+  }
 
   cargarTecnicos() {
-    this.tecnicosService.getTecnicos(this.tallerId).subscribe(data => {
+    const tallerId = this.authService.currentUser?.taller_id;
+    this.tecnicosService.getTecnicos(tallerId).subscribe((data: any) => {
       this.tecnicos = data;
       this.cdr.detectChanges();
     });
@@ -41,8 +76,8 @@ export class TecnicosComponent implements OnInit {
   }
 
   guardar() {
-    // Vinculamos el técnico al taller actual
-    const payload = { ...this.nuevoTecnico, taller_id: this.tallerId };
+    const tallerId = this.authService.currentUser?.taller_id;
+    const payload = { ...this.nuevoTecnico, taller_id: tallerId };
     
     this.usuariosService.crearUsuario(payload).subscribe(() => {
       this.cargarTecnicos();
@@ -54,13 +89,5 @@ export class TecnicosComponent implements OnInit {
     if(confirm('¿Seguro?')) {
       this.usuariosService.eliminarUsuario(id).subscribe(() => this.cargarTecnicos());
     }
-  }
-
-  toggle(tecnico: any) {
-    const nuevoEstado = !tecnico.disponible;
-    this.tecnicosService.toggleDisponibilidad(tecnico.usuario_id || tecnico.id, nuevoEstado).subscribe(() => {
-      tecnico.disponible = nuevoEstado;
-      this.cdr.detectChanges();
-    });
   }
 }

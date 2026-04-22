@@ -1,16 +1,77 @@
 <div class="animate-in">
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-            <h1 class="text-2xl font-extrabold text-slate-800">Cuerpo Técnico</h1>
-            <p class="text-slate-500 font-medium">Control de personal operativo y disponibilidad</p>
+            <h1 class="text-2xl font-extrabold text-slate-800">{{ esTecnico ? 'Mi Estado Operativo' : 'Cuerpo Técnico' }}</h1>
+            <p class="text-slate-500 font-medium">{{ esTecnico ? 'Configura tu disponibilidad para emergencias' : 'Control de personal operativo' }}</p>
         </div>
-        <button class="btn-sx-primary" (click)="abrirModal()">
-            <i class="bi bi-person-badge-fill"></i>
-            <span>Vincular Técnico</span>
-        </button>
+        <div class="flex gap-2">
+            <button class="btn-sx-secondary p-3" (click)="cargarTecnicos()" title="Actualizar Estados">
+                <i class="bi bi-arrow-clockwise"></i>
+            </button>
+            <button *ngIf="!esTecnico" class="btn-sx-primary" (click)="abrirModal()">
+                <i class="bi bi-person-badge-fill"></i>
+                <span>Vincular Técnico</span>
+            </button>
+        </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+    <!-- VISTA PARA EL TÉCNICO -->
+    <div *ngIf="esTecnico" class="animate-in">
+        <div class="max-w-2xl mx-auto">
+            <div class="sx-card p-10 border-2 border-blue-100 shadow-blue-100/50">
+                <div class="flex flex-col items-center text-center mb-10">
+                    <div class="relative mb-6">
+                        <img src="https://ui-avatars.com/api/?name=Tecnico&background=0066FF&color=fff&size=128&bold=true" 
+                             class="rounded-3xl shadow-xl border-4 border-white" width="100" height="100">
+                        <div class="absolute -bottom-2 -right-2 w-8 h-8 rounded-full border-4 border-white shadow-sm"
+                             [ngClass]="miPerfil.disponible ? 'bg-green-500' : 'bg-red-500'"></div>
+                    </div>
+                    <h2 class="text-2xl font-black text-slate-800 mb-2">¡Hola, {{ authService.currentUser?.nombre }}!</h2>
+                    <span class="badge-sx" [ngClass]="miPerfil.disponible ? 'success' : 'danger'">
+                        {{ miPerfil.disponible ? 'DISPONIBLE' : 'OCUPADO' }}
+                    </span>
+                </div>
+
+                <div class="space-y-8">
+                    <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between">
+                        <div>
+                            <h4 class="text-lg font-bold text-slate-800 mb-1">Disponibilidad en tiempo real</h4>
+                            <p class="text-sm text-slate-500 font-medium mb-0">Activa esto para recibir alertas de ayuda cercana.</p>
+                        </div>
+                        <div class="form-check form-switch m-0">
+                            <input class="form-check-input w-16 h-8 cursor-pointer" type="checkbox" [(ngModel)]="miPerfil.disponible" (change)="guardarMiPerfil()">
+                        </div>
+                    </div>
+
+                    <div class="sx-form-group">
+                        <label class="form-label text-slate-500 uppercase tracking-widest text-[10px] font-black">Tu Especialidad Principal</label>
+                        <div class="relative">
+                            <i class="bi bi-tools absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" [(ngModel)]="miPerfil.especialidad_principal" 
+                                   class="form-control pl-12 h-14 font-bold text-slate-700" 
+                                   placeholder="Ej: Mecánica Integral, Electricidad...">
+                        </div>
+                    </div>
+
+                    <button (click)="guardarMiPerfil()" class="btn-sx-primary w-full h-14 text-lg">
+                        Actualizar mi Perfil
+                    </button>
+                </div>
+            </div>
+            
+            <div class="mt-8 p-6 bg-blue-50 border border-blue-100 rounded-2xl flex gap-4 items-start">
+                <div class="bg-blue-600 p-2 rounded-lg text-white">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+                <p class="text-sm text-blue-800 font-medium mb-0 leading-relaxed">
+                    Tu seguridad es primero. Recuerda que al estar <strong>disponible</strong>, tus coordenadas podrán ser compartidas con clientes en emergencia.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- VISTA PARA EL ADMIN (Lista de técnicos) -->
+    <div *ngIf="!esTecnico" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         <div class="sx-card hover:bg-slate-50/50 group" *ngFor="let t of tecnicos">
             <div class="flex items-center gap-4 mb-6">
                 <div class="relative">
@@ -31,12 +92,13 @@
             <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between mb-0">
                 <div class="flex flex-col">
                     <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Estado de Servicio</span>
-                    <span class="text-sm font-black" [ngClass]="t.disponible ? 'text-green-600' : 'text-red-600'">
-                        {{t.disponible ? 'OPERATIVO' : 'EN PAUSA'}}
+                    <span class="badge-sx" [ngClass]="t.disponible ? 'success' : 'danger'">
+                        {{ t.disponible ? 'DISPONIBLE' : 'OCUPADO' }}
                     </span>
                 </div>
-                <div class="form-check form-switch m-0">
-                    <input class="form-check-input w-12 h-6" type="checkbox" [checked]="t.disponible" (change)="toggle(t)">
+                <!-- El Admin ya no tiene switch, solo ve el estado -->
+                <div class="text-slate-300">
+                    <i class="bi" [ngClass]="t.disponible ? 'bi-check-circle-fill text-green-500' : 'bi-dash-circle-fill text-red-500'"></i>
                 </div>
             </div>
 

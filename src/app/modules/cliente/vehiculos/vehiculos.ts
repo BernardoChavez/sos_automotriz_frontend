@@ -2,7 +2,7 @@ import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { VehiculosService } from '../../../core/services/vehiculos';
-import { AuthService } from '../../../core/services/auth'; // <--- Importante
+import { AuthService } from '../../../core/services/auth';
 
 @Component({
   selector: 'app-vehiculos',
@@ -12,11 +12,14 @@ import { AuthService } from '../../../core/services/auth'; // <--- Importante
 })
 export class VehiculosComponent implements OnInit {
   private vehiculoService = inject(VehiculosService);
-  private authService = inject(AuthService); // <--- Inyectamos para obtener el usuario
+  private authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
   
   vehiculos: any[] = [];
   mostrarModal = false;
+  editando = false;
+  vehiculoId: number | null = null;
+  
   nuevoVehiculo = { placa: '', marca: '', modelo: '', color: '', anio: 2024 };
 
   get esSuperAdmin(): boolean {
@@ -34,27 +37,59 @@ export class VehiculosComponent implements OnInit {
     });
   }
 
-  abrirModal() { this.mostrarModal = true; }
+  abrirModal(vehiculo: any = null) {
+    if (vehiculo) {
+      this.editando = true;
+      this.vehiculoId = vehiculo.id;
+      this.nuevoVehiculo = { ...vehiculo };
+    } else {
+      this.editando = false;
+      this.vehiculoId = null;
+      this.nuevoVehiculo = { placa: '', marca: '', modelo: '', color: '', anio: 2024 };
+    }
+    this.mostrarModal = true;
+  }
+
   cerrarModal() { this.mostrarModal = false; }
 
+  guardar() {
+    if (this.editando) {
+      this.actualizar();
+    } else {
+      this.registrar();
+    }
+  }
+
   registrar() {
-    // Obtenemos el ID del usuario actual para que el backend lo reconozca
     const user = this.authService.currentUser;
-    
-    const payload = {
-      ...this.nuevoVehiculo,
-      cliente_id: user?.id // Enviamos el ID del usuario logueado
-    };
+    const payload = { ...this.nuevoVehiculo, cliente_id: user?.id };
 
     this.vehiculoService.crearVehiculo(payload).subscribe({
       next: () => {
         this.cargarVehiculos();
         this.cerrarModal();
-        this.nuevoVehiculo = { placa: '', marca: '', modelo: '', color: '', anio: 2024 };
       },
-      error: (err) => {
-        alert("Error al guardar: " + (err.error?.detail || "Fallo de conexión"));
-      }
+      error: (err: any) => alert("Error al guardar: " + (err.error?.detail || "Fallo"))
     });
+  }
+
+  actualizar() {
+    if (!this.vehiculoId) return;
+    this.vehiculoService.updateVehiculo(this.vehiculoId, this.nuevoVehiculo).subscribe({
+      next: () => {
+        this.cargarVehiculos();
+        this.cerrarModal();
+      },
+      error: (err: any) => alert("Error al actualizar: " + (err.error?.detail || "Fallo"))
+    });
+  }
+
+  eliminar(id: number) {
+    if (confirm('¿Estás seguro de eliminar este vehículo?')) {
+      this.vehiculoService.deleteVehiculo(id).subscribe({
+        next: () => this.cargarVehiculos(),
+        error: (err: any) => alert("Error al eliminar")
+      });
+    }
   }
 }

@@ -1,94 +1,164 @@
 <div class="animate-in">
-    <div class="mb-8">
-        <h1 class="text-2xl font-extrabold text-slate-800">Resumen General</h1>
-        <p class="text-slate-500 font-medium">Panel de control de {{authService.currentUser?.rol?.replace('_', ' ')}}</p>
+    <!-- Pantalla de Carga -->
+    <div *ngIf="loading" class="flex flex-col items-center justify-center py-20">
+        <div class="spinner-border text-blue-600 mb-4" role="status"></div>
+        <p class="text-slate-400 font-bold tracking-widest text-xs uppercase">Cargando Tablero...</p>
     </div>
 
-    <!-- Stats Section for Super Admin -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" *ngIf="authService.currentUser?.rol === 'super_admin' && resumen">
-        <div class="stat-card">
-            <div class="icon-wrapper bg-blue-50 text-blue-600">
-                <i class="bi bi-people text-2xl"></i>
-            </div>
-            <div>
-                <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Usuarios</p>
-                <h3 class="text-2xl font-black text-slate-800 mb-0">{{resumen.usuarios}}</h3>
-            </div>
+    <div *ngIf="!loading">
+        <div class="mb-8">
+            <h1 class="text-3xl font-black text-slate-800 mb-1">¡Hola, {{authService.currentUser?.nombre}}!</h1>
+            <p class="text-slate-500 font-medium">Bienvenido a tu panel de control de {{getRoleName()}}</p>
         </div>
-        <div class="stat-card">
-            <div class="icon-wrapper bg-green-50 text-green-600">
-                <i class="bi bi-building text-2xl"></i>
-            </div>
-            <div>
-                <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Talleres</p>
-                <h3 class="text-2xl font-black text-slate-800 mb-0">{{resumen.talleres}}</h3>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="icon-wrapper bg-amber-50 text-amber-600">
-                <i class="bi bi-shield-exclamation text-2xl"></i>
-            </div>
-            <div>
-                <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Alertas</p>
-                <h3 class="text-2xl font-black text-slate-800 mb-0">{{resumen.emergencias}}</h3>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="icon-wrapper bg-slate-100 text-slate-800">
-                <i class="bi bi-cash-stack text-2xl"></i>
-            </div>
-            <div>
-                <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Facturación</p>
-                <h3 class="text-2xl font-black text-slate-800 mb-0">{{resumen.ingresos | currency}}</h3>
-            </div>
-        </div>
-    </div>
 
-    <!-- Stats Section for Admin Taller -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6" *ngIf="authService.currentUser?.rol === 'admin_taller' && resumen">
-        <div class="stat-card">
-            <div class="icon-wrapper bg-blue-50 text-blue-600">
-                <i class="bi bi-wrench-adjustable text-2xl"></i>
+        <!-- Stats Section for Super Admin -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" *ngIf="authService.currentUser?.rol === 'super_admin' && resumen">
+            <div class="stat-card cursor-pointer hover:translate-y-[-4px] transition-all" routerLink="/dashboard/admin/usuarios">
+                <div class="icon-wrapper bg-blue-50 text-blue-600">
+                    <i class="bi bi-people text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Usuarios</p>
+                    <h3 class="text-2xl font-black text-slate-800 mb-0">{{resumen.usuarios}}</h3>
+                </div>
             </div>
-            <div>
-                <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Personal</p>
-                <h3 class="text-2xl font-black text-slate-800 mb-0">{{resumen.tecnicos}}</h3>
+            <div class="stat-card cursor-pointer hover:translate-y-[-4px] transition-all" routerLink="/dashboard/admin/talleres">
+                <div class="icon-wrapper bg-green-50 text-green-600">
+                    <i class="bi bi-building text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Talleres</p>
+                    <h3 class="text-2xl font-black text-slate-800 mb-0">{{resumen.talleres}}</h3>
+                </div>
+            </div>
+            <div class="stat-card cursor-pointer hover:translate-y-[-4px] transition-all">
+                <div class="icon-wrapper bg-amber-50 text-amber-600">
+                    <i class="bi bi-car-front-fill text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Vehículos</p>
+                    <h3 class="text-2xl font-black text-slate-800 mb-0">{{resumen.vehiculos || 0}}</h3>
+                </div>
+            </div>
+            <div class="stat-card cursor-pointer hover:translate-y-[-4px] transition-all" routerLink="/dashboard/admin/roles-permisos">
+                <div class="icon-wrapper bg-slate-100 text-slate-800">
+                    <i class="bi bi-lock-fill text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Seguridad</p>
+                    <h3 class="text-lg font-bold text-slate-600 mb-0">Roles</h3>
+                </div>
             </div>
         </div>
-        <div class="stat-card">
-            <div class="icon-wrapper bg-green-50 text-green-600">
-                <i class="bi bi-calendar-check text-2xl"></i>
-            </div>
-            <div>
-                <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Servicios</p>
-                <h3 class="text-2xl font-black text-slate-800 mb-0">{{resumen.servicios_hoy}}</h3>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="icon-wrapper bg-slate-50 text-slate-500">
-                <i class="bi bi-activity text-2xl"></i>
-            </div>
-            <div>
-                <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Estado</p>
-                <h3 class="text-xl font-bold text-green-600 mb-0">{{resumen.estado_taller}}</h3>
-            </div>
-        </div>
-    </div>
 
-    <!-- Client View -->
-    <div class="mt-8" *ngIf="authService.currentUser?.rol === 'cliente'">
-        <div class="sx-card border-none shadow-sm flex flex-col md:flex-row items-center gap-8 p-12">
-            <div class="bg-blue-50 p-8 rounded-full">
-                <i class="bi bi-car-front text-blue-600 text-6xl"></i>
+        <!-- Stats Section for Admin Taller -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" *ngIf="authService.currentUser?.rol === 'admin_taller' && resumen">
+            <div class="stat-card cursor-pointer hover:translate-y-[-4px] transition-all" routerLink="/dashboard/taller/tecnicos">
+                <div class="icon-wrapper bg-blue-50 text-blue-600">
+                    <i class="bi bi-wrench-adjustable text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Personal</p>
+                    <h3 class="text-2xl font-black text-slate-800 mb-0">{{resumen.tecnicos}}</h3>
+                </div>
             </div>
-            <div class="text-center md:text-left">
-                <h2 class="text-3xl font-black text-slate-800 mb-2">Central de Vehículos</h2>
-                <p class="text-slate-500 max-w-md mb-6 font-medium">
-                    Mantén tu flota registrada para recibir asistencia inmediata. Gestiona marcas, modelos y placas de forma centralizada.
-                </p>
-                <button routerLink="/dashboard/cliente/vehiculos" class="btn-sx-primary px-8 py-3">
-                    Gestionar Mis Vehículos
-                </button>
+            <div class="stat-card cursor-pointer hover:translate-y-[-4px] transition-all">
+                <div class="icon-wrapper bg-green-50 text-green-600">
+                    <i class="bi bi-calendar-check text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Servicios</p>
+                    <h3 class="text-2xl font-black text-slate-800 mb-0">{{resumen.servicios_hoy}}</h3>
+                </div>
+            </div>
+            <div class="stat-card cursor-pointer hover:translate-y-[-4px] transition-all" routerLink="/dashboard/taller/configuracion">
+                <div class="icon-wrapper bg-slate-50 text-slate-500">
+                    <i class="bi bi-activity text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Estado</p>
+                    <h3 class="text-xl font-bold text-green-600 mb-0">{{resumen.estado_taller}}</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technician View -->
+        <div class="mt-8" *ngIf="authService.currentUser?.rol === 'tecnico'">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8" *ngIf="resumen">
+                <div class="stat-card cursor-pointer hover:translate-y-[-4px] transition-all" routerLink="/dashboard/taller/tecnicos">
+                    <div class="icon-wrapper bg-blue-50 text-blue-600">
+                        <i class="bi bi-activity text-2xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Mi Estado</p>
+                        <h3 class="text-xl font-bold mb-0" [ngClass]="resumen.disponible ? 'text-green-600' : 'text-red-600'">
+                            {{ resumen.disponible ? 'DISPONIBLE' : 'OCUPADO' }}
+                        </h3>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon-wrapper bg-amber-50 text-amber-600">
+                        <i class="bi bi-star-fill text-2xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Especialidad</p>
+                        <h3 class="text-lg font-black text-slate-800 mb-0">{{ resumen.especialidad || 'General' }}</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sx-card border-none shadow-sm flex flex-col md:flex-row items-center gap-8 p-12 bg-slate-900 text-white">
+                <div class="bg-slate-800 p-8 rounded-full">
+                    <i class="bi bi-person-badge text-blue-400 text-6xl"></i>
+                </div>
+                <div class="text-center md:text-left">
+                    <h2 class="text-3xl font-black mb-2 text-white">Panel Operativo</h2>
+                    <p class="text-slate-400 max-w-md mb-6 font-medium">
+                        Tu disponibilidad es clave para el sistema. Asegúrate de estar en línea cuando estés listo para recibir emergencias.
+                    </p>
+                    <button routerLink="/dashboard/taller/tecnicos" class="btn-sx-primary px-8 py-3 bg-blue-600 border-none">
+                        Gestionar Mi Estado
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Client View -->
+        <div class="mt-8" *ngIf="authService.currentUser?.rol === 'cliente'">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8" *ngIf="resumen">
+                <div class="stat-card cursor-pointer hover:translate-y-[-4px] transition-all" routerLink="/dashboard/cliente/vehiculos">
+                    <div class="icon-wrapper bg-blue-50 text-blue-600">
+                        <i class="bi bi-car-front-fill text-2xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Mis Vehículos</p>
+                        <h3 class="text-2xl font-black text-slate-800 mb-0">{{resumen.vehiculos || 0}}</h3>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon-wrapper bg-green-50 text-green-600">
+                        <i class="bi bi-shield-check text-2xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Estado</p>
+                        <h3 class="text-xl font-bold text-green-600 mb-0">Protegido</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sx-card border-none shadow-sm flex flex-col md:flex-row items-center gap-8 p-12">
+                <div class="bg-blue-50 p-8 rounded-full">
+                    <i class="bi bi-car-front text-blue-600 text-6xl"></i>
+                </div>
+                <div class="text-center md:text-left">
+                    <h2 class="text-3xl font-black text-slate-800 mb-2">Central de Vehículos</h2>
+                    <p class="text-slate-500 max-w-md mb-6 font-medium">
+                        Mantén tu flota registrada para recibir asistencia inmediata. Gestiona marcas, modelos y placas de forma centralizada.
+                    </p>
+                    <button routerLink="/dashboard/cliente/vehiculos" class="btn-sx-primary px-8 py-3">
+                        Gestionar Mis Vehículos
+                    </button>
+                </div>
             </div>
         </div>
     </div>

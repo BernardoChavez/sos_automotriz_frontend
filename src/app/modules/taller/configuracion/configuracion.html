@@ -5,8 +5,37 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Columna de Horarios -->
+        <!-- Columna de Datos y Horarios -->
         <div class="lg:col-span-2 space-y-8">
+            <!-- DATOS GENERALES -->
+            <div class="sx-card">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="bg-blue-600 p-2.5 rounded-lg text-white">
+                        <i class="bi bi-info-circle-fill text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-black text-slate-800 mb-0">Información General</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="md:col-span-2">
+                        <label class="form-label">Nombre Comercial del Taller</label>
+                        <input type="text" [(ngModel)]="taller.nombre" class="form-control" placeholder="Ej: Taller Mecánico SOS">
+                    </div>
+                    <div>
+                        <label class="form-label">Teléfono de Contacto</label>
+                        <input type="text" [(ngModel)]="taller.telefono" class="form-control" placeholder="+591 7XXXXXXX">
+                    </div>
+                    <div>
+                        <label class="form-label">Especialidad Principal</label>
+                        <input type="text" [(ngModel)]="taller.especialidad" class="form-control" placeholder="Ej: Mecánica Integral">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="form-label">Dirección Física</label>
+                        <textarea [(ngModel)]="taller.direccion" class="form-control" rows="2" placeholder="Calle, Avenida, Zona..."></textarea>
+                    </div>
+                </div>
+            </div>
+
             <div class="sx-card">
                 <div class="flex items-center gap-4 mb-8">
                     <div class="bg-blue-600 p-2.5 rounded-lg text-white">
@@ -17,9 +46,10 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
                     <div *ngFor="let dia of diasSemana" class="flex flex-col">
-                        <label class="form-label mb-2">{{dia}}</label>
+                        <label class="form-label mb-1 text-xs font-bold text-slate-600">{{dia}}</label>
                         <input type="text" [(ngModel)]="taller.horarios_atencion[dia]" 
-                               class="form-control" placeholder="Cerrado / 08:00 - 18:00">
+                               class="form-control h-11" placeholder="Ej: 08:00 - 18:00">
+                        <span class="text-[9px] text-slate-400 mt-1">Usa formato HH:MM - HH:MM</span>
                     </div>
                 </div>
             </div>
