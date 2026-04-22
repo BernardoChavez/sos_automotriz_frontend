@@ -1,0 +1,53 @@
+<div class="animate-in">
+    <div class="mb-8">
+        <h1 class="text-2xl font-extrabold text-slate-800">Seguridad de Acceso</h1>
+        <p class="text-slate-500 font-medium">Matriz granular de permisos y visibilidad</p>
+    </div>
+
+    <div class="sx-card p-0 overflow-hidden shadow-sm border-slate-200">
+        <div class="overflow-x-auto">
+            <table class="sx-table">
+                <thead>
+                    <tr>
+                        <th class="min-w-[280px]">Funcionalidad del Sistema</th>
+                        <th class="text-center" *ngFor="let rol of roles">
+                            <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">{{rol.replace('_', ' ')}}</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let p of matriz">
+                        <td>
+                            <div class="flex items-center gap-3 py-1">
+                                <div class="w-1.5 h-6 bg-blue-600 rounded-full"></div>
+                                <div>
+                                    <div class="font-bold text-slate-800 leading-none">{{p.descripcion}}</div>
+                                    <code class="text-[10px] text-slate-400 font-bold">{{p.codigo}}</code>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center" *ngFor="let rol of roles">
+                            <div class="flex justify-center">
+                                <input class="form-check-input w-10 h-5 cursor-pointer" type="checkbox" 
+                                       [checked]="p[rol]" 
+                                       (change)="toggle(rol, p.id)">
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="mt-8 p-6 rounded-2xl bg-slate-100/50 border border-slate-200 flex items-start gap-4">
+        <div class="bg-blue-600 p-2 rounded-lg text-white">
+            <i class="bi bi-info-circle-fill"></i>
+        </div>
+        <div>
+            <h6 class="font-black text-slate-800 mb-1 uppercase tracking-tight">Arquitectura de Seguridad Reactiva</h6>
+            <p class="text-slate-500 text-sm font-medium mb-0 leading-relaxed">
+                Los cambios en los permisos se propagan instantáneamente a través de los guards de Angular. No es necesario reiniciar el servidor, sin embargo, los usuarios conectados deberán refrescar su sesión para ver los cambios aplicados en su interfaz.
+            </p>
+        </div>
+    </div>
+</div>

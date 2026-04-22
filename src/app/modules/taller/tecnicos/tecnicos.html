@@ -1,0 +1,93 @@
+<div class="animate-in">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div>
+            <h1 class="text-2xl font-extrabold text-slate-800">Cuerpo Técnico</h1>
+            <p class="text-slate-500 font-medium">Control de personal operativo y disponibilidad</p>
+        </div>
+        <button class="btn-sx-primary" (click)="abrirModal()">
+            <i class="bi bi-person-badge-fill"></i>
+            <span>Vincular Técnico</span>
+        </button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div class="sx-card hover:bg-slate-50/50 group" *ngFor="let t of tecnicos">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="relative">
+                    <img src="https://ui-avatars.com/api/?name={{t.nombre}}&background=0066FF&color=fff&bold=true" 
+                         class="rounded-xl shadow-sm" width="56" height="56" alt="avatar">
+                    <div class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white" 
+                         [ngClass]="t.disponible ? 'bg-green-500' : 'bg-red-500'"></div>
+                </div>
+                <div class="flex-grow">
+                    <h5 class="text-lg font-black text-slate-800 mb-0 leading-tight">{{t.nombre}}</h5>
+                    <p class="text-slate-400 text-xs font-bold truncate max-w-[150px] mb-0">{{t.email}}</p>
+                </div>
+                <button (click)="eliminar(t.id)" class="text-slate-300 hover:text-red-500 transition-colors">
+                    <i class="bi bi-trash fs-5"></i>
+                </button>
+            </div>
+            
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between mb-0">
+                <div class="flex flex-col">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Estado de Servicio</span>
+                    <span class="text-sm font-black" [ngClass]="t.disponible ? 'text-green-600' : 'text-red-600'">
+                        {{t.disponible ? 'OPERATIVO' : 'EN PAUSA'}}
+                    </span>
+                </div>
+                <div class="form-check form-switch m-0">
+                    <input class="form-check-input w-12 h-6" type="checkbox" [checked]="t.disponible" (change)="toggle(t)">
+                </div>
+            </div>
+
+            <div *ngIf="esSuperAdmin && t.taller_nombre" class="mt-4 flex items-center gap-2">
+                <div class="w-1 h-4 bg-blue-600 rounded-full"></div>
+                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-tight">{{ t.taller_nombre }}</span>
+            </div>
+        </div>
+
+        <div *ngIf="tecnicos.length === 0" class="col-span-full py-20 flex flex-col items-center justify-center bg-white border border-dashed border-slate-300 rounded-2xl">
+            <div class="bg-slate-50 p-6 rounded-full mb-4">
+                <i class="bi bi-people text-slate-300 text-5xl"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-700">No hay técnicos asignados</h3>
+            <p class="text-slate-500 mb-0">Comienza vinculando personal calificado a tu taller.</p>
+        </div>
+    </div>
+
+    <!-- Modal Simple White -->
+    <div class="fixed inset-0 z-[1060] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade" *ngIf="mostrarModal">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div class="p-8 border-b border-slate-100 flex justify-between items-center">
+                <h2 class="text-xl font-black text-slate-800 mb-0">Registro de Personal</h2>
+                <button (click)="mostrarModal = false" class="text-slate-400 hover:text-slate-600"><i class="bi bi-x-lg"></i></button>
+            </div>
+            
+            <div class="p-8">
+                <div class="mb-6">
+                    <label class="form-label">Nombre Completo</label>
+                    <input type="text" [(ngModel)]="nuevoTecnico.nombre" class="form-control" placeholder="Ej: Juan Perez">
+                </div>
+                <div class="mb-6">
+                    <label class="form-label">Email Corporativo</label>
+                    <input type="email" [(ngModel)]="nuevoTecnico.email" class="form-control" placeholder="juan@taller.com">
+                </div>
+                <div class="mb-6">
+                    <label class="form-label">Contraseña Temporal</label>
+                    <input type="password" [(ngModel)]="nuevoTecnico.password" class="form-control" placeholder="••••••••">
+                </div>
+                <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 flex gap-3">
+                    <i class="bi bi-info-circle-fill text-blue-600"></i>
+                    <p class="text-[11px] text-blue-700 font-medium mb-0 leading-tight">
+                        Se le enviará una notificación al correo electrónico proporcionado para que el técnico complete su perfil.
+                    </p>
+                </div>
+            </div>
+
+            <div class="p-8 pt-0 flex justify-end gap-3">
+                <button class="btn-sx-secondary" (click)="mostrarModal = false">Cerrar</button>
+                <button class="btn-sx-primary px-8" (click)="guardar()">Vincular</button>
+            </div>
+        </div>
+    </div>
+</div>

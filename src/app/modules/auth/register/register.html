@@ -1,0 +1,55 @@
+<div class="min-h-screen bg-white flex items-center justify-center p-8">
+    <div class="w-full max-w-2xl animate-in">
+      <div class="text-center mb-12">
+        <div class="inline-flex bg-blue-600 p-4 rounded-2xl text-white shadow-xl mb-6">
+            <i class="bi bi-person-plus-fill text-3xl"></i>
+        </div>
+        <h2 class="text-4xl font-black text-slate-800 tracking-tightest mb-2">Crear Cuenta de Cliente</h2>
+        <p class="text-slate-500 font-medium max-w-md mx-auto">Únete a la red SOS Automotriz y gestiona tus vehículos con la mejor asistencia técnica.</p>
+      </div>
+  
+      <div class="bg-slate-50 border border-slate-200 rounded-3xl p-10 shadow-sm">
+        <form (ngSubmit)="onRegister()">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                <div>
+                    <label class="form-label">Nombre Completo</label>
+                    <input type="text" name="nombre" [(ngModel)]="user.nombre" class="form-control" placeholder="Ej: Juan Pérez" required>
+                </div>
+                <div>
+                    <label class="form-label">Correo Electrónico</label>
+                    <input type="email" name="email" [(ngModel)]="user.email" class="form-control" placeholder="juan@correo.com" required>
+                </div>
+                <div>
+                    <label class="form-label">Teléfono de Contacto</label>
+                    <input type="text" name="telefono" [(ngModel)]="user.telefono" class="form-control" placeholder="+591 ...">
+                </div>
+                <div>
+                    <label class="form-label">Contraseña de Acceso</label>
+                    <input type="password" name="password" [(ngModel)]="user.password" class="form-control" placeholder="••••••••" required>
+                </div>
+            </div>
+      
+            @if (errorMessage) {
+              <div class="bg-red-50 text-red-700 border border-red-100 p-4 rounded-xl text-sm font-medium mb-8 animate-fade">
+                <i class="bi bi-exclamation-octagon me-2"></i> {{ errorMessage }}
+              </div>
+            }
+      
+            <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+                <p class="text-slate-500 text-sm font-medium mb-0">
+                    ¿Ya tienes cuenta? 
+                    <a routerLink="/auth/login" class="text-blue-600 font-bold hover:underline">Inicia Sesión</a>
+                </p>
+                <button type="submit" [disabled]="loading" class="btn-sx-primary px-12 py-3.5 text-lg shadow-blue-200">
+                    @if (loading) { <span class="spinner-border spinner-border-sm me-2"></span> }
+                    <span *ngIf="!loading">Crear mi Perfil <i class="bi bi-check-lg ms-2"></i></span>
+                </button>
+            </div>
+        </form>
+      </div>
+
+      <div class="mt-12 text-center text-slate-400 text-xs font-bold uppercase tracking-widest">
+          SOS AUTOMOTRIZ &copy; 2026 - SISTEMA DE SEGURIDAD VIAL
+      </div>
+    </div>
+</div>

@@ -1,4 +1,4 @@
 export const environment = {
-    production: true,
-    apiUrl: 'https://sos-automotriz-backend.onrender.com' // Tu URL real de Render
+    production: false,
+    apiUrl: 'http://127.0.0.1:8000' // Usar IP directa para evitar problemas de DNS
 };

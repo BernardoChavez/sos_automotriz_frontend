@@ -1,0 +1,92 @@
+<div class="min-h-screen bg-white flex items-center justify-center p-8">
+    <div class="w-full max-w-md animate-in">
+      <div class="text-center mb-10">
+        <div class="bg-amber-100 w-20 h-20 rounded-2xl flex items-center justify-center text-amber-600 shadow-sm mb-6 mx-auto border border-amber-200">
+            <i class="bi bi-key-fill text-4xl"></i>
+        </div>
+        <h2 class="text-3xl font-black text-slate-800 mb-2 tracking-tightest">
+            {{ paso === 1 ? '¿Olvidaste tu clave?' : 'Verificar Código' }}
+        </h2>
+        <p class="text-slate-500 font-medium">
+            {{ paso === 1 ? 'Ingresa tu correo para recibir un código de recuperación.' : 'Ingresa el código y tu nueva contraseña.' }}
+        </p>
+      </div>
+  
+      <!-- Paso 1: Solicitar Código -->
+      <form (ngSubmit)="onRecover()" *ngIf="paso === 1" class="space-y-8 bg-slate-50 p-10 rounded-3xl border border-slate-200 shadow-sm">
+        <div>
+          <label class="form-label">Correo Registrado</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><i class="bi bi-envelope"></i></span>
+            <input type="email" name="email" [(ngModel)]="email" class="form-control !pl-10" placeholder="nombre@correo.com" required>
+          </div>
+        </div>
+  
+        @if (errorMessage) {
+          <div class="bg-red-50 text-red-700 border border-red-100 p-4 rounded-xl text-sm font-medium animate-fade">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ errorMessage }}
+          </div>
+        }
+  
+        <button type="submit" [disabled]="loading" class="btn-sx-primary w-full py-3.5 text-lg shadow-blue-200">
+          @if (loading) { <span class="spinner-border spinner-border-sm me-2"></span> }
+          <span *ngIf="!loading">Enviar Código <i class="bi bi-send-fill ms-2"></i></span>
+        </button>
+
+        <div class="text-center">
+            <a routerLink="/auth/login" class="text-slate-400 font-bold text-xs uppercase tracking-widest hover:text-blue-600 transition-colors">
+                <i class="bi bi-arrow-left me-2"></i> Volver al Login
+            </a>
+        </div>
+      </form>
+
+      <!-- Paso 2: Ingresar Código y Nueva Clave -->
+      <form (ngSubmit)="onReset()" *ngIf="paso === 2" class="space-y-6 bg-slate-50 p-10 rounded-3xl border border-slate-200 shadow-sm">
+        <div>
+            <label class="form-label">Código de Seguridad</label>
+            <input type="text" name="codigo" [(ngModel)]="codigo" class="form-control text-center text-xl font-bold tracking-widest" placeholder="XXXXXX" maxlength="6" required>
+        </div>
+
+        <div>
+            <label class="form-label">Nueva Contraseña</label>
+            <input type="password" name="newPassword" [(ngModel)]="newPassword" class="form-control" placeholder="Mínimo 6 caracteres" required>
+        </div>
+
+        <div>
+            <label class="form-label">Confirmar Contraseña</label>
+            <input type="password" name="confirmPassword" [(ngModel)]="confirmPassword" class="form-control" placeholder="Repite la contraseña" required>
+        </div>
+
+        @if (errorMessage) {
+            <div class="bg-red-50 text-red-700 border border-red-100 p-4 rounded-xl text-sm font-medium animate-fade">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ errorMessage }}
+            </div>
+        }
+
+        <button type="submit" [disabled]="loading" class="btn-sx-primary w-full py-3.5 text-lg shadow-blue-200">
+            @if (loading) { <span class="spinner-border spinner-border-sm me-2"></span> }
+            <span *ngIf="!loading">Cambiar Contraseña <i class="bi bi-check-circle-fill ms-2"></i></span>
+        </button>
+
+        <div class="text-center">
+            <button type="button" (click)="paso = 1" class="text-slate-400 font-bold text-xs uppercase tracking-widest hover:text-blue-600 transition-colors">
+                <i class="bi bi-arrow-left me-2"></i> Cambiar Correo
+            </button>
+        </div>
+      </form>
+
+      <!-- Paso 3: Éxito Final -->
+      <div *ngIf="paso === 3" class="bg-green-50 border border-green-200 p-10 rounded-3xl text-center animate-fade">
+          <div class="bg-green-600 w-16 h-16 rounded-full flex items-center justify-center text-white mx-auto mb-6 shadow-lg shadow-green-100">
+              <i class="bi bi-check-lg text-3xl"></i>
+          </div>
+          <h4 class="text-green-800 font-black mb-4">¡Contraseña Cambiada!</h4>
+          <p class="text-green-700 font-medium mb-8 leading-relaxed">
+              Tu contraseña ha sido restablecida con éxito. Ya puedes iniciar sesión.
+          </p>
+          <button routerLink="/auth/login" class="btn-sx-primary w-full py-3.5">
+              Ir al Login
+          </button>
+      </div>
+    </div>
+</div>

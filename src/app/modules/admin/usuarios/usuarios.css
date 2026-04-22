@@ -1,0 +1,8 @@
+.bg-primary-soft { background-color: #e7f0ff; }
+.bg-info-soft { background-color: #e0f7fa; }
+.bg-success-soft { background-color: #e8f5e9; }
+
+.table-hover tbody tr:hover {
+  background-color: #f8faff;
+  transition: 0.2s;
+}

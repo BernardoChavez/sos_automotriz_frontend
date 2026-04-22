@@ -1,0 +1,14 @@
+<div class="flex min-h-screen bg-slate-50">
+    <!-- Sidebar -->
+    <app-sidebar class="hidden lg:block"></app-sidebar>
+  
+    <div class="flex-grow flex flex-col min-w-0">
+      <!-- Navbar -->
+      <app-navbar></app-navbar>
+      
+      <!-- Main Content -->
+      <main class="p-8 flex-grow">
+        <router-outlet></router-outlet>
+      </main>
+    </div>
+</div>

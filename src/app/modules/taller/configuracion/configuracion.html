@@ -1,0 +1,72 @@
+<div class="animate-in" *ngIf="!loading">
+    <div class="mb-8">
+        <h1 class="text-2xl font-extrabold text-slate-800">Parámetros Operativos</h1>
+        <p class="text-slate-500 font-medium">Configuración de disponibilidad y cobertura geográfica</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Columna de Horarios -->
+        <div class="lg:col-span-2 space-y-8">
+            <div class="sx-card">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="bg-blue-600 p-2.5 rounded-lg text-white">
+                        <i class="bi bi-clock-history text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-black text-slate-800 mb-0">Horarios de Operación</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+                    <div *ngFor="let dia of diasSemana" class="flex flex-col">
+                        <label class="form-label mb-2">{{dia}}</label>
+                        <input type="text" [(ngModel)]="taller.horarios_atencion[dia]" 
+                               class="form-control" placeholder="Cerrado / 08:00 - 18:00">
+                    </div>
+                </div>
+            </div>
+
+            <div class="sx-card">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="bg-slate-100 p-2.5 rounded-lg text-slate-700">
+                        <i class="bi bi-geo-alt-fill text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-black text-slate-800 mb-0">Zonas de Cobertura</h3>
+                </div>
+                
+                <div class="bg-slate-50 border border-slate-100 rounded-xl p-8 flex flex-col items-center text-center">
+                    <i class="bi bi-map text-slate-300 text-5xl mb-4"></i>
+                    <p class="text-slate-500 font-medium max-w-sm">
+                        La integración con Google Maps para selección de polígonos de cobertura geográfica se habilitará en el Ciclo 2.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna Lateral -->
+        <div class="space-y-8">
+            <div class="sx-card">
+                <h4 class="text-lg font-black text-slate-800 mb-6 uppercase tracking-tight border-b border-slate-50 pb-4">Capacidad Operativa</h4>
+                
+                <div class="mb-6">
+                    <label class="form-label">Vehículos en simultáneo</label>
+                    <input type="number" [(ngModel)]="taller.capacidad_teorica" class="form-control text-lg font-bold">
+                    <p class="text-[10px] text-slate-400 mt-2 italic">Define cuántos vehículos puede atender el taller al mismo tiempo según su infraestructura física.</p>
+                </div>
+
+                <div class="p-4 rounded-xl bg-blue-50 border border-blue-100">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-blue-700 uppercase tracking-widest">Estatus Público</span>
+                        <div class="form-check form-switch m-0">
+                            <input class="form-check-input w-10 h-5" type="checkbox" [(ngModel)]="taller.esta_activo">
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-blue-600 mt-2 font-medium">Si desactivas esta opción, tu taller no aparecerá en las búsquedas de clientes para emergencias.</p>
+                </div>
+            </div>
+
+            <button (click)="guardar()" class="btn-sx-primary w-full py-4 text-lg shadow-blue-200">
+                <i class="bi bi-cloud-arrow-up-fill text-xl"></i>
+                <span>Publicar Cambios</span>
+            </button>
+        </div>
+    </div>
+</div>

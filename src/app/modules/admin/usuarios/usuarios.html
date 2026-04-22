@@ -1,0 +1,120 @@
+<div class="animate-in">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+      <div>
+        <h1 class="text-2xl font-extrabold text-slate-800">Control de Usuarios</h1>
+        <p class="text-slate-500 font-medium">Gestión de identidades y niveles de acceso</p>
+      </div>
+      <button class="btn-sx-primary" (click)="abrirModal()">
+        <i class="bi bi-person-plus"></i>
+        <span>Añadir Usuario</span>
+      </button>
+    </div>
+  
+    <div class="sx-card p-0 overflow-hidden shadow-sm border-slate-200">
+      <div class="overflow-x-auto">
+        <table class="sx-table">
+          <thead>
+            <tr>
+              <th>Usuario</th>
+              <th>Contacto / Email</th>
+              <th>Perfil</th>
+              <th class="text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (u of usuarios; track u.email) {
+              <tr>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <img src="https://ui-avatars.com/api/?name={{u.nombre}}&background=F1F5F9&color=64748B&bold=true" 
+                         class="rounded-lg" width="36" height="36" alt="avatar">
+                    <span class="font-bold text-slate-800">{{ u.nombre }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="flex flex-col">
+                    <span class="text-slate-700 font-medium">{{ u.email }}</span>
+                    <span class="text-[10px] text-slate-400 font-bold uppercase">{{ u.telefono || 'Sin teléfono' }}</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="badge-sx" 
+                        [ngClass]="{
+                            'info': u.rol === 'super_admin',
+                            'warning': u.rol === 'admin_taller',
+                            'success': u.rol === 'tecnico' || u.rol === 'cliente'
+                        }">
+                    {{ u.rol | uppercase }}
+                  </span>
+                </td>
+                <td class="text-right">
+                  <div class="flex justify-end gap-2">
+                    <button (click)="abrirModal(u)" class="p-2 text-slate-400 hover:text-blue-600 transition-colors">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
+                    <button (click)="eliminar(u.id)" class="p-2 text-slate-400 hover:text-red-600 transition-colors">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="4" class="text-center py-20 text-slate-400 font-medium italic">
+                    No se han registrado usuarios en el directorio.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Simple White -->
+  @if (mostrarModal) {
+    <div class="fixed inset-0 z-[1060] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+        <div class="p-8 border-b border-slate-100 flex justify-between items-center">
+            <h2 class="text-xl font-black text-slate-800 mb-0">{{ editando ? 'Editar' : 'Nuevo' }} Usuario</h2>
+            <button (click)="cerrarModal()" class="text-slate-400 hover:text-slate-600"><i class="bi bi-x-lg"></i></button>
+        </div>
+        
+        <div class="p-8">
+            <div class="mb-6">
+              <label class="form-label">Nombre Completo</label>
+              <input type="text" [(ngModel)]="nuevoUsuario.nombre" class="form-control" placeholder="Ej: Juan Pérez">
+            </div>
+            <div class="mb-6">
+              <label class="form-label">Correo Electrónico</label>
+              <input type="email" [(ngModel)]="nuevoUsuario.email" class="form-control" placeholder="correo@ejemplo.com">
+            </div>
+            <div class="grid grid-cols-2 gap-6 mb-6">
+              <div>
+                <label class="form-label">Rol del Sistema</label>
+                <select [(ngModel)]="nuevoUsuario.rol" class="form-select">
+                  <option value="cliente">Cliente</option>
+                  <option value="admin_taller">Administrador Taller</option>
+                  <option value="tecnico">Personal Técnico</option>
+                  <option value="super_admin">Super Administrador</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">Teléfono</label>
+                <input type="text" [(ngModel)]="nuevoUsuario.telefono" class="form-control" placeholder="+591 ...">
+              </div>
+            </div>
+            <div class="mb-0">
+              <label class="form-label">Contraseña de Acceso</label>
+              <input type="password" [(ngModel)]="nuevoUsuario.password" class="form-control" placeholder="••••••••">
+              <p class="text-[10px] text-slate-400 mt-2 italic" *ngIf="editando">* Dejar en blanco para mantener la contraseña actual.</p>
+            </div>
+        </div>
+
+        <div class="p-8 pt-0 flex justify-end gap-3">
+            <button class="btn-sx-secondary" (click)="cerrarModal()">Cancelar</button>
+            <button class="btn-sx-primary px-8" (click)="registrar()">Guardar Cambios</button>
+        </div>
+      </div>
+    </div>
+  }

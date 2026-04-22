@@ -1,0 +1,68 @@
+<div class="sidebar">
+    <div class="logo-section">
+      <div class="bg-blue-600 p-2 rounded-lg text-white">
+        <i class="bi bi-shield-check text-xl"></i>
+      </div>
+      <h4 class="mb-0">SOS AUTO</h4>
+    </div>
+  
+    <nav class="nav-menu">
+      <div class="px-4 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">General</div>
+      
+      <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">
+        <i class="bi bi-grid"></i>
+        <span>Dashboard</span>
+      </a>
+  
+      <div class="px-4 mt-6 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Módulos</div>
+
+      <li class="list-none" *ngIf="authService.hasPermission('vehiculos.cliente')">
+        <a routerLink="/dashboard/cliente/vehiculos" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-car-front"></i>
+          <span>Mis Vehículos</span>
+        </a>
+      </li>
+  
+      <li class="list-none" *ngIf="authService.hasPermission('talleres.registrar')">
+        <a routerLink="/dashboard/admin/talleres" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-building"></i>
+          <span>Talleres</span>
+        </a>
+      </li>
+  
+      <li class="list-none" *ngIf="authService.hasPermission('usuarios.gestionar')">
+        <a routerLink="/dashboard/admin/usuarios" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-people"></i>
+          <span>Usuarios</span>
+        </a>
+      </li>
+  
+      <li class="list-none" *ngIf="authService.currentUser?.rol === 'super_admin'">
+        <a routerLink="/dashboard/admin/roles-permisos" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-lock"></i>
+          <span>Roles y Permisos</span>
+        </a>
+      </li>
+  
+      <li class="list-none" *ngIf="authService.hasPermission('tecnico.operar')">
+        <a routerLink="/dashboard/taller/tecnicos" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-tools"></i>
+          <span>Mis Técnicos</span>
+        </a>
+      </li>
+
+      <li class="list-none" *ngIf="authService.currentUser?.rol === 'admin_taller'">
+        <a routerLink="/dashboard/taller/configuracion" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-sliders"></i>
+          <span>Configuración</span>
+        </a>
+      </li>
+    </nav>
+  
+    <div class="sidebar-footer">
+      <button (click)="authService.logout()" class="btn-logout">
+        <i class="bi bi-box-arrow-left"></i>
+        <span>Cerrar Sesión</span>
+      </button>
+    </div>
+  </div>

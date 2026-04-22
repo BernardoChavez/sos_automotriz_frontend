@@ -1,0 +1,110 @@
+<div class="animate-in">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div>
+            <h1 class="text-2xl font-extrabold text-slate-800">Red de Talleres</h1>
+            <p class="text-slate-500 font-medium">Centros de asistencia técnica autorizados</p>
+        </div>
+        <button (click)="abrirModal()" class="btn-sx-primary">
+            <i class="bi bi-plus-circle"></i>
+            <span>Vincular Taller</span>
+        </button>
+    </div>
+
+    <div class="sx-card p-0 overflow-hidden shadow-sm border-slate-200">
+        <div class="overflow-x-auto">
+            <table class="sx-table">
+                <thead>
+                    <tr>
+                        <th>Identificación</th>
+                        <th>Servicio</th>
+                        <th>Dirección / Ubicación</th>
+                        <th>Estado Operativo</th>
+                        <th class="text-right">Operaciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let t of talleres">
+                        <td>
+                            <div class="flex items-center gap-3">
+                                <div class="bg-blue-50 text-blue-600 p-2.5 rounded-lg">
+                                    <i class="bi bi-shop text-lg"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-slate-800">{{t.nombre}}</div>
+                                    <div class="text-[10px] text-slate-400 font-bold uppercase tracking-tight">{{t.telefono || 'Sin contacto'}}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge-sx info uppercase font-black tracking-tighter">{{t.especialidad}}</span>
+                        </td>
+                        <td class="max-w-[200px]">
+                            <p class="text-xs text-slate-500 truncate mb-0">{{t.direccion}}</p>
+                        </td>
+                        <td>
+                            <span class="badge-sx" [ngClass]="t.esta_activo ? 'success' : 'danger'">
+                                {{t.esta_activo ? 'ACTIVO' : 'INACTIVO'}}
+                            </span>
+                        </td>
+                        <td class="text-right">
+                            <div class="flex justify-end gap-2">
+                                <button class="p-2 text-slate-400 hover:text-blue-600"><i class="bi bi-gear-fill"></i></button>
+                                <button (click)="eliminar(t.id)" class="p-2 text-slate-400 hover:text-red-600"><i class="bi bi-trash-fill"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Simple White -->
+<div *ngIf="mostrarModal" class="fixed inset-0 z-[1060] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+        <div class="p-8 border-b border-slate-100 flex justify-between items-center">
+            <h2 class="text-xl font-black text-slate-800 mb-0">Registrar Centro de Servicio</h2>
+            <button (click)="cerrarModal()" class="text-slate-400 hover:text-slate-600"><i class="bi bi-x-lg"></i></button>
+        </div>
+        
+        <div class="p-8">
+            <form (ngSubmit)="guardar()">
+                <div class="mb-6">
+                    <label class="form-label">Nombre del Taller</label>
+                    <input type="text" name="nombre" [(ngModel)]="nuevoTaller.nombre" class="form-control" placeholder="Ej: Central de Servicios SOS" required>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="form-label">Especialidad</label>
+                        <select name="especialidad" [(ngModel)]="nuevoTaller.especialidad" class="form-select">
+                            <option value="General">Mecánica General</option>
+                            <option value="Mecánica">Mecánica Avanzada</option>
+                            <option value="Electricidad">Sistema Eléctrico</option>
+                            <option value="Latonería">Latonería y Pintura</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Capacidad Teórica</label>
+                        <input type="number" name="capacidad" [(ngModel)]="nuevoTaller.capacidad_teorica" class="form-control" placeholder="10">
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label class="form-label">Dirección Física</label>
+                    <textarea name="direccion" [(ngModel)]="nuevoTaller.direccion" class="form-control h-20" placeholder="Descripción detallada de la ubicación..."></textarea>
+                </div>
+
+                <div class="mb-0">
+                    <label class="form-label">Teléfono de Atención</label>
+                    <input type="text" name="telefono" [(ngModel)]="nuevoTaller.telefono" class="form-control" placeholder="+591 ...">
+                </div>
+
+                <div class="mt-8 flex justify-end gap-3">
+                    <button type="button" (click)="cerrarModal()" class="btn-sx-secondary">Descartar</button>
+                    <button type="submit" class="btn-sx-primary px-8">Guardar Taller</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

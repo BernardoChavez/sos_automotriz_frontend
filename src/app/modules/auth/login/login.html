@@ -1,0 +1,63 @@
+<div class="min-h-screen bg-white flex flex-col md:flex-row">
+    <!-- Columna Izquierda: Branding -->
+    <div class="hidden md:flex md:w-1/2 bg-slate-50 items-center justify-center p-12 border-r border-slate-100">
+      <div class="max-w-md">
+        <div class="bg-blue-600 w-20 h-20 rounded-2xl flex items-center justify-center text-white shadow-2xl mb-8">
+            <i class="bi bi-shield-check text-4xl"></i>
+        </div>
+        <h1 class="text-5xl font-black text-slate-800 tracking-tightest mb-6">SOS AUTOMOTRIZ</h1>
+        <p class="text-xl text-slate-500 font-medium leading-relaxed">
+            La red líder en asistencia técnica y rescate vial. Gestión inteligente para talleres y seguridad garantizada para conductores.
+        </p>
+      </div>
+    </div>
+
+    <!-- Columna Derecha: Formulario -->
+    <div class="flex-grow flex items-center justify-center p-8">
+      <div class="w-full max-w-md animate-in">
+        <div class="mb-10">
+          <h2 class="text-3xl font-black text-slate-800 mb-2">Iniciar Sesión</h2>
+          <p class="text-slate-500 font-medium">Ingresa tus credenciales corporativas</p>
+        </div>
+  
+        <form (ngSubmit)="onLogin()" class="space-y-6">
+          <div>
+            <label class="form-label">Correo Institucional</label>
+            <div class="relative">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><i class="bi bi-envelope"></i></span>
+              <input type="email" name="email" [(ngModel)]="credentials.email" class="form-control !pl-10" placeholder="usuario@empresa.com" required>
+            </div>
+          </div>
+  
+          <div>
+            <div class="flex justify-between items-center mb-1.5">
+              <label class="form-label mb-0">Contraseña de Acceso</label>
+              <a routerLink="/auth/recovery" class="text-xs font-bold text-blue-600 hover:underline">¿La olvidaste?</a>
+            </div>
+            <div class="relative">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><i class="bi bi-lock"></i></span>
+              <input type="password" name="password" [(ngModel)]="credentials.password" class="form-control !pl-10" placeholder="••••••••" required>
+            </div>
+          </div>
+  
+          @if (errorMessage) {
+            <div class="bg-red-50 text-red-700 border border-red-100 p-4 rounded-xl text-sm font-medium animate-fade">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ errorMessage }}
+            </div>
+          }
+  
+          <button type="submit" [disabled]="loading" class="btn-sx-primary w-full py-3.5 text-lg shadow-blue-200">
+            @if (loading) { <span class="spinner-border spinner-border-sm me-2"></span> }
+            <span *ngIf="!loading">Ingresar al Sistema <i class="bi bi-arrow-right-short ms-1"></i></span>
+          </button>
+  
+          <div class="pt-8 border-t border-slate-50 text-center">
+            <p class="text-slate-500 text-sm font-medium">
+                ¿Aún no eres parte de la red? 
+                <a routerLink="/auth/register" class="text-blue-600 font-bold hover:underline ms-1">Regístrate aquí</a>
+            </p>
+          </div>
+        </form>
+      </div>
+    </div>
+</div>
