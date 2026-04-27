@@ -66,6 +66,13 @@ export class ConfiguracionTallerComponent implements OnInit {
   }
 
   guardar() {
+    if (this.authService.currentUser?.rol !== 'super_admin') {
+      if (!this.taller.nombre || !this.taller.telefono || !this.taller.direccion) {
+        alert('El nombre, teléfono y dirección del taller son obligatorios.');
+        return;
+      }
+    }
+
     const id = this.authService.currentUser?.taller_id;
     if (!id) return;
 
@@ -77,6 +84,42 @@ export class ConfiguracionTallerComponent implements OnInit {
         alert('Configuración guardada exitosamente');
       },
       error: (err) => alert('Error al guardar: ' + (err.error?.detail || 'Fallo'))
+    });
+  }
+
+  obtenerUbicacion() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          this.taller.latitud = pos.coords.latitude;
+          this.taller.longitud = pos.coords.longitude;
+          this.cdr.detectChanges();
+        },
+        (err) => {
+          alert('No se pudo obtener la ubicación. Por favor, asegúrate de dar permisos de GPS a tu navegador.');
+        }
+      );
+    } else {
+      alert('Tu navegador no soporta geolocalización.');
+    }
+  }
+
+  toggleEmergencia() {
+    const id = this.authService.currentUser?.taller_id;
+    if (!id) return;
+    
+    // Guardar inmediatamente y de forma independiente solo el estado del switch
+    this.http.put(`${environment.apiUrl}/talleres/${id}`, {
+      esta_activo: this.taller.esta_activo
+    }).subscribe({
+      next: () => {
+        const msg = this.taller.esta_activo ? 'Taller ABIERTO manualmente.' : 'Taller CERRADO de emergencia.';
+        alert(msg);
+      },
+      error: () => {
+        alert('Error al cambiar estado.');
+        this.taller.esta_activo = !this.taller.esta_activo; // Revertir en caso de error
+      }
     });
   }
 }

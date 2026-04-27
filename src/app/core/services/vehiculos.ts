@@ -1,12 +1,12 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
+import { environment } from '../../../environments';
 
 @Injectable({ providedIn: 'root' })
 export class VehiculosService {
   private http = inject(HttpClient);
-  // IP fija para evitar problemas de DNS en Windows
-  private apiUrl = 'http://127.0.0.1:8000/vehiculos/'; 
+  private apiUrl = `${environment.apiUrl}/vehiculos/`; 
 
   getVehiculos(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);

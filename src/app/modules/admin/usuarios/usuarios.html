@@ -1,75 +1,183 @@
 <div class="animate-in">
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
       <div>
-        <h1 class="text-2xl font-extrabold text-slate-800">Control de Usuarios</h1>
-        <p class="text-slate-500 font-medium">Gestión de identidades y niveles de acceso</p>
+        <h1 class="text-2xl font-extrabold text-slate-800 italic uppercase tracking-tighter">Control de <span class="text-blue-600">Usuarios</span></h1>
+        <p class="text-slate-500 font-medium">Gestión de identidades y niveles de acceso global</p>
       </div>
-      <button class="btn-sx-primary" (click)="abrirModal()">
-        <i class="bi bi-person-plus"></i>
-        <span>Añadir Usuario</span>
+      <button class="btn-sx-primary bg-slate-900 border-none shadow-xl shadow-slate-200" (click)="abrirModal()">
+        <i class="bi bi-person-plus-fill"></i>
+        <span>NUEVO USUARIO</span>
       </button>
     </div>
-  
-    <div class="sx-card p-0 overflow-hidden shadow-sm border-slate-200">
-      <div class="overflow-x-auto">
-        <table class="sx-table">
-          <thead>
-            <tr>
-              <th>Usuario</th>
-              <th>Contacto / Email</th>
-              <th>Perfil</th>
-              <th class="text-right">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (u of usuarios; track u.email) {
-              <tr>
-                <td>
-                  <div class="flex items-center gap-3">
-                    <img src="https://ui-avatars.com/api/?name={{u.nombre}}&background=F1F5F9&color=64748B&bold=true" 
-                         class="rounded-lg" width="36" height="36" alt="avatar">
-                    <span class="font-bold text-slate-800">{{ u.nombre }}</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="flex flex-col">
-                    <span class="text-slate-700 font-medium">{{ u.email }}</span>
-                    <span class="text-[10px] text-slate-400 font-bold uppercase">{{ u.telefono || 'Sin teléfono' }}</span>
-                  </div>
-                </td>
-                <td>
-                  <span class="badge-sx" 
-                        [ngClass]="{
-                            'info': u.rol === 'super_admin',
-                            'warning': u.rol === 'admin_taller',
-                            'success': u.rol === 'tecnico' || u.rol === 'cliente'
-                        }">
-                    {{ u.rol | uppercase }}
-                  </span>
-                </td>
-                <td class="text-right">
-                  <div class="flex justify-end gap-2">
-                    <button (click)="abrirModal(u)" class="p-2 text-slate-400 hover:text-blue-600 transition-colors">
-                        <i class="bi bi-pencil-square"></i>
-                    </button>
-                    <button (click)="eliminar(u.id)" class="p-2 text-slate-400 hover:text-red-600 transition-colors">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            } @empty {
-              <tr>
-                <td colspan="4" class="text-center py-20 text-slate-400 font-medium italic">
-                    No se han registrado usuarios en el directorio.
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
+
+    <!-- SISTEMA DE ACORDEONES POR ROL -->
+    <div class="space-y-6">
+        <!-- SECCIÓN CLIENTES -->
+        <div class="animate-in">
+            <div (click)="toggleGrupo('cliente')" 
+                 class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 flex items-center justify-between cursor-pointer hover:border-blue-400 hover:shadow-md transition-all group"
+                 [ngClass]="{'border-blue-600 bg-blue-50/20': grupoExpandido === 'cliente'}">
+                <div class="flex items-center gap-5">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center transition-all"
+                         [ngClass]="grupoExpandido === 'cliente' ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-600'">
+                        <i class="bi bi-people-fill text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-black text-slate-800 uppercase tracking-tighter mb-0">Directorio de Clientes</h2>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{{ usuariosAgrupados['cliente'].length }} USUARIOS ACTIVOS</p>
+                    </div>
+                </div>
+                <i class="bi text-xl transition-transform duration-300" [ngClass]="grupoExpandido === 'cliente' ? 'bi-chevron-up text-blue-600' : 'bi-chevron-down text-slate-300'"></i>
+            </div>
+            <div *ngIf="grupoExpandido === 'cliente'" class="pt-6 animate-in">
+                <div class="sx-card p-0 overflow-hidden shadow-sm border-slate-200">
+                    <ng-container *ngTemplateOutlet="userTable; context: { users: usuariosAgrupados['cliente'] }"></ng-container>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN ADMIN TALLER -->
+        <div class="animate-in">
+            <div (click)="toggleGrupo('admin_taller')" 
+                 class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 flex items-center justify-between cursor-pointer hover:border-amber-400 hover:shadow-md transition-all group"
+                 [ngClass]="{'border-amber-500 bg-amber-50/20': grupoExpandido === 'admin_taller'}">
+                <div class="flex items-center gap-5">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center transition-all"
+                         [ngClass]="grupoExpandido === 'admin_taller' ? 'bg-amber-500 text-white' : 'bg-amber-100 text-amber-600'">
+                        <i class="bi bi-shop text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-black text-slate-800 uppercase tracking-tighter mb-0">Administradores de Taller</h2>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{{ usuariosAgrupados['admin_taller'].length }} GESTORES DE CENTRO</p>
+                    </div>
+                </div>
+                <i class="bi text-xl transition-transform duration-300" [ngClass]="grupoExpandido === 'admin_taller' ? 'bi-chevron-up text-amber-600' : 'bi-chevron-down text-slate-300'"></i>
+            </div>
+            <div *ngIf="grupoExpandido === 'admin_taller'" class="pt-6 animate-in">
+                <div class="sx-card p-0 overflow-hidden shadow-sm border-slate-200">
+                    <ng-container *ngTemplateOutlet="userTable; context: { users: usuariosAgrupados['admin_taller'] }"></ng-container>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN TÉCNICOS CON FILTRO -->
+        <div class="animate-in">
+            <div (click)="toggleGrupo('tecnico')" 
+                 class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 flex items-center justify-between cursor-pointer hover:border-green-400 hover:shadow-md transition-all group"
+                 [ngClass]="{'border-green-600 bg-green-50/20': grupoExpandido === 'tecnico'}">
+                <div class="flex items-center gap-5">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center transition-all"
+                         [ngClass]="grupoExpandido === 'tecnico' ? 'bg-green-600 text-white' : 'bg-green-100 text-green-600'">
+                        <i class="bi bi-wrench-adjustable text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-black text-slate-800 uppercase tracking-tighter mb-0">Personal Técnico</h2>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{{ getTecnicosFiltrados().length }} OPERARIOS ACTIVOS</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-3 bg-white p-2 rounded-2xl shadow-sm border border-slate-100" *ngIf="grupoExpandido === 'tecnico'" (click)="$event.stopPropagation()">
+                        <i class="bi bi-filter text-slate-400 ms-2"></i>
+                        <select [(ngModel)]="tallerSeleccionado" class="text-[10px] font-black text-slate-600 bg-transparent border-none outline-none min-w-[150px] uppercase">
+                            <option [ngValue]="null">Todos los Talleres</option>
+                            <option *ngFor="let t of talleres" [value]="t.id">{{ t.nombre }}</option>
+                        </select>
+                    </div>
+                    <i class="bi text-xl transition-transform duration-300" [ngClass]="grupoExpandido === 'tecnico' ? 'bi-chevron-up text-green-600' : 'bi-chevron-down text-slate-300'"></i>
+                </div>
+            </div>
+            <div *ngIf="grupoExpandido === 'tecnico'" class="pt-6 animate-in">
+                <div class="sx-card p-0 overflow-hidden shadow-sm border-slate-200">
+                    <ng-container *ngTemplateOutlet="userTable; context: { users: getTecnicosFiltrados() }"></ng-container>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN STAFF -->
+        <div class="animate-in" *ngIf="usuariosAgrupados['super_admin'].length > 0">
+            <div (click)="toggleGrupo('super_admin')" 
+                 class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 flex items-center justify-between cursor-pointer hover:border-slate-900 hover:shadow-md transition-all group"
+                 [ngClass]="{'border-slate-900 bg-slate-100/50': grupoExpandido === 'super_admin'}">
+                <div class="flex items-center gap-5">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center transition-all"
+                         [ngClass]="grupoExpandido === 'super_admin' ? 'bg-slate-900 text-white' : 'bg-slate-200 text-slate-600'">
+                        <i class="bi bi-shield-lock-fill text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-black text-slate-800 uppercase tracking-tighter mb-0">Staff Administrativo</h2>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{{ usuariosAgrupados['super_admin'].length }} CUENTAS MAESTRAS</p>
+                    </div>
+                </div>
+                <i class="bi text-xl transition-transform duration-300" [ngClass]="grupoExpandido === 'super_admin' ? 'bi-chevron-up text-slate-900' : 'bi-chevron-down text-slate-300'"></i>
+            </div>
+            <div *ngIf="grupoExpandido === 'super_admin'" class="pt-6 animate-in">
+                <div class="sx-card p-0 overflow-hidden shadow-sm border-slate-200">
+                    <ng-container *ngTemplateOutlet="userTable; context: { users: usuariosAgrupados['super_admin'] }"></ng-container>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
+
+</div>
+
+<!-- Template para la tabla de usuarios -->
+<ng-template #userTable let-users="users">
+    <div class="overflow-x-auto">
+        <table class="sx-table">
+            <thead>
+                <tr>
+                    <th>Nombre / Propietario</th>
+                    <th>Contacto</th>
+                    <th *ngIf="authService.currentUser?.rol === 'super_admin'">Centro Vinculado</th>
+                    <th class="text-right">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let u of users">
+                    <td>
+                        <div class="flex items-center gap-3">
+                            <img src="https://ui-avatars.com/api/?name={{u.nombre}}&background=F1F5F9&color=64748B&bold=true" 
+                                 class="rounded-xl border border-slate-100" width="40" height="40">
+                            <div>
+                                <div class="font-black text-slate-800 text-sm uppercase tracking-tighter">{{ u.nombre }}</div>
+                                <div class="text-[9px] font-bold text-blue-500 uppercase tracking-widest">{{ u.rol }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="flex flex-col">
+                            <span class="text-slate-600 font-bold text-xs">{{ u.email }}</span>
+                            <span class="text-[10px] text-slate-400 font-medium italic">{{ u.telefono || 'No registrado' }}</span>
+                        </div>
+                    </td>
+                    <td *ngIf="authService.currentUser?.rol === 'super_admin'">
+                        <div class="flex items-center gap-2" *ngIf="u.taller_nombre">
+                            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                            <span class="text-xs font-black text-slate-700 uppercase tracking-tighter">{{ u.taller_nombre }}</span>
+                        </div>
+                        <span class="text-[10px] text-slate-300 font-bold uppercase tracking-widest" *ngIf="!u.taller_nombre">Autónomo / Global</span>
+                    </td>
+                    <td class="text-right">
+                        <div class="flex justify-end gap-1">
+                            <button (click)="abrirModal(u)" class="p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">
+                                <i class="bi bi-pencil-square"></i>
+                            </button>
+                            <button (click)="eliminar(u.id)" class="p-2.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr *ngIf="users.length === 0">
+                    <td colspan="4" class="text-center py-12 text-slate-400 font-bold uppercase text-[10px] tracking-[0.2em] italic">
+                        Sin registros en esta categoría
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</ng-template>
+
   
   <!-- Modal Simple White -->
   @if (mostrarModal) {
@@ -82,11 +190,11 @@
         
         <div class="p-8">
             <div class="mb-6">
-              <label class="form-label">Nombre Completo</label>
+              <label class="form-label">Nombre Completo <span class="text-red-500">*</span></label>
               <input type="text" [(ngModel)]="nuevoUsuario.nombre" class="form-control" placeholder="Ej: Juan Pérez">
             </div>
             <div class="mb-6">
-              <label class="form-label">Correo Electrónico</label>
+              <label class="form-label">Correo Electrónico <span class="text-red-500">*</span></label>
               <input type="email" [(ngModel)]="nuevoUsuario.email" class="form-control" placeholder="correo@ejemplo.com">
             </div>
             <div class="grid grid-cols-2 gap-6 mb-6">
@@ -105,9 +213,38 @@
               </div>
             </div>
             <div class="mb-0">
-              <label class="form-label">Contraseña de Acceso</label>
+              <label class="form-label">Contraseña de Acceso <span class="text-red-500" *ngIf="!editando">*</span></label>
               <input type="password" [(ngModel)]="nuevoUsuario.password" class="form-control" placeholder="••••••••">
               <p class="text-[10px] text-slate-400 mt-2 italic" *ngIf="editando">* Dejar en blanco para mantener la contraseña actual.</p>
+              
+              <!-- Checklist de Seguridad -->
+              <div class="grid grid-cols-2 gap-2 mt-4" *ngIf="nuevoUsuario.password">
+                <div class="flex items-center gap-2 text-[9px] font-bold uppercase transition-colors" [ngClass]="passwordValidations.min ? 'text-green-500' : 'text-slate-300'">
+                    <i class="bi" [ngClass]="passwordValidations.min ? 'bi-check-circle-fill' : 'bi-circle'"></i> 6+ Caracteres
+                </div>
+                <div class="flex items-center gap-2 text-[9px] font-bold uppercase transition-colors" [ngClass]="passwordValidations.upper ? 'text-green-500' : 'text-slate-300'">
+                    <i class="bi" [ngClass]="passwordValidations.upper ? 'bi-check-circle-fill' : 'bi-circle'"></i> Mayúscula
+                </div>
+                <div class="flex items-center gap-2 text-[9px] font-bold uppercase transition-colors" [ngClass]="passwordValidations.lower ? 'text-green-500' : 'text-slate-300'">
+                    <i class="bi" [ngClass]="passwordValidations.lower ? 'bi-check-circle-fill' : 'bi-circle'"></i> Minúscula
+                </div>
+                <div class="flex items-center gap-2 text-[9px] font-bold uppercase transition-colors" [ngClass]="passwordValidations.num ? 'text-green-500' : 'text-slate-300'">
+                    <i class="bi" [ngClass]="passwordValidations.num ? 'bi-check-circle-fill' : 'bi-circle'"></i> Número
+                </div>
+                <div class="flex items-center gap-2 text-[9px] font-bold uppercase transition-colors" [ngClass]="passwordValidations.spec ? 'text-green-500' : 'text-slate-300'">
+                    <i class="bi" [ngClass]="passwordValidations.spec ? 'bi-check-circle-fill' : 'bi-circle'"></i> Símbolo
+                </div>
+              </div>
+            </div>
+
+            <!-- Selector de Taller (Solo si es admin_taller o tecnico) -->
+            <div class="mt-6 animate-in" *ngIf="nuevoUsuario.rol === 'admin_taller' || nuevoUsuario.rol === 'tecnico'">
+                <label class="form-label text-blue-600 font-black">Vincular a Taller <span class="text-red-500">*</span></label>
+                <select [(ngModel)]="nuevoUsuario.taller_id" class="form-select border-blue-200 bg-blue-50/50">
+                    <option [ngValue]="null">-- Seleccionar Taller --</option>
+                    <option *ngFor="let t of talleres" [value]="t.id">{{ t.nombre }} ({{ t.especialidad }})</option>
+                </select>
+                <p class="text-[10px] text-blue-400 mt-1 italic font-medium">Requerido para el funcionamiento del despacho IA.</p>
             </div>
         </div>
 

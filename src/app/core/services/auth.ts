@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, tap } from 'rxjs';
+import { environment } from '../../../environments';
 
 @Injectable({
   providedIn: 'root'
@@ -9,8 +10,7 @@ import { BehaviorSubject, tap } from 'rxjs';
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
-  // IP directa para evitar lag de DNS en Windows
-  private apiUrl = 'http://localhost:8000/auth';
+  private apiUrl = `${environment.apiUrl}/auth`;
 
   private userSubject = new BehaviorSubject<any>(null);
   user$ = this.userSubject.asObservable();
@@ -62,6 +62,13 @@ export class AuthService {
   }
 
   logout() {
+    this.http.post(`${this.apiUrl}/logout`, {}).subscribe({
+      next: () => this.finishLogout(),
+      error: () => this.finishLogout() // Cerrar igual si hay error
+    });
+  }
+
+  private finishLogout() {
     localStorage.clear();
     this.userSubject.next(null);
     this.router.navigate(['/auth/login']);

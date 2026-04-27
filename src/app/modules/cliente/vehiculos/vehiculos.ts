@@ -16,7 +16,15 @@ export class VehiculosComponent implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   
   vehiculos: any[] = [];
+  vehiculosAgrupados: { [key: string]: any[] } = {};
+  grupoExpandido: string | null = null;
+  
   mostrarModal = false;
+
+  toggleGrupo(key: string) {
+    this.grupoExpandido = this.grupoExpandido === key ? null : key;
+  }
+
   editando = false;
   vehiculoId: number | null = null;
   
@@ -32,10 +40,25 @@ export class VehiculosComponent implements OnInit {
     this.vehiculoService.getVehiculos().subscribe({
       next: (data) => {
         this.vehiculos = [...data];
+        this.agruparVehiculos();
         this.cdr.detectChanges();
       }
     });
   }
+
+  agruparVehiculos() {
+    this.vehiculosAgrupados = {};
+    if (!this.esSuperAdmin) return;
+
+    this.vehiculos.forEach(v => {
+      const owner = v.cliente_nombre || 'Sin Propietario';
+      if (!this.vehiculosAgrupados[owner]) {
+        this.vehiculosAgrupados[owner] = [];
+      }
+      this.vehiculosAgrupados[owner].push(v);
+    });
+  }
+
 
   abrirModal(vehiculo: any = null) {
     if (vehiculo) {
@@ -53,6 +76,13 @@ export class VehiculosComponent implements OnInit {
   cerrarModal() { this.mostrarModal = false; }
 
   guardar() {
+    if (!this.esSuperAdmin) {
+      if (!this.nuevoVehiculo.placa || !this.nuevoVehiculo.marca || !this.nuevoVehiculo.modelo) {
+        alert('La placa, marca y modelo son campos obligatorios.');
+        return;
+      }
+    }
+
     if (this.editando) {
       this.actualizar();
     } else {

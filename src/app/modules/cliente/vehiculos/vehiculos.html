@@ -1,73 +1,130 @@
 <div class="animate-in">
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
       <div>
-        <h1 class="text-2xl font-extrabold text-slate-800">Mis Vehículos</h1>
-        <p class="text-slate-500 font-medium">Inventario de unidades registradas en el sistema</p>
+        <h1 class="text-2xl font-extrabold text-slate-800 italic uppercase tracking-tighter">Mi <span class="text-blue-600">Flota</span> Vehicular</h1>
+        <p class="text-slate-500 font-medium">Gestión de unidades y activos registrados</p>
       </div>
-      <button class="btn-sx-primary" (click)="abrirModal()">
+      <button class="btn-sx-primary bg-slate-900 border-none shadow-xl shadow-slate-200" (click)="abrirModal()" *ngIf="!esSuperAdmin">
         <i class="bi bi-plus-lg"></i>
-        <span>Registrar Vehículo</span>
+        <span>REGISTRAR VEHÍCULO</span>
       </button>
     </div>
-  
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-      @for (v of vehiculos; track v.placa) {
-        <div class="sx-card hover:border-blue-400 group">
-          <div class="flex justify-between items-start mb-6">
-            <div class="bg-slate-50 border border-slate-100 rounded-lg px-3 py-1 text-xs font-bold text-slate-500">
-                MODELO {{ v.anio }}
+
+    <!-- VISTA SUPER ADMIN (SISTEMA DE CARDS EXPANDIBLES) -->
+    <div *ngIf="esSuperAdmin" class="space-y-4">
+        <div *ngFor="let group of vehiculosAgrupados | keyvalue" class="animate-in">
+            <!-- Card del Propietario -->
+            <div (click)="toggleGrupo(group.key)" 
+                 class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 flex items-center justify-between cursor-pointer hover:border-blue-300 hover:shadow-md transition-all group"
+                 [ngClass]="{'border-blue-500 bg-blue-50/20': grupoExpandido === group.key}">
+                
+                <div class="flex items-center gap-5">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center transition-all"
+                         [ngClass]="grupoExpandido === group.key ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500'">
+                        <i class="bi bi-person-circle text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-black text-slate-800 uppercase tracking-tighter mb-0">{{ group.key }}</h2>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">PROPIETARIO DE {{ $any(group.value).length }} UNIDADES</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <span class="px-4 py-1 bg-white border border-slate-100 rounded-full text-[10px] font-black text-slate-500 shadow-sm" *ngIf="grupoExpandido !== group.key">
+                        CLICK PARA VER DETALLES
+                    </span>
+                    <i class="bi text-xl transition-transform duration-300" 
+                       [ngClass]="grupoExpandido === group.key ? 'bi-dash-circle-fill text-blue-600 rotate-180' : 'bi-plus-circle text-slate-300'"></i>
+                </div>
             </div>
-            <div class="flex gap-1">
-              <button (click)="abrirModal(v)" class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Editar">
-                <i class="bi bi-pencil-square"></i>
-              </button>
-              <button (click)="eliminar(v.id)" class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Eliminar">
-                <i class="bi bi-trash3"></i>
+
+            <!-- Contenido Expandible (Grilla de Vehículos) -->
+            <div *ngIf="grupoExpandido === group.key" class="pt-6 pb-10 px-4 animate-in">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div *ngFor="let v of $any(group.value)">
+                        <ng-container *ngTemplateOutlet="vehicleCard; context: { v: v }"></ng-container>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div *ngIf="vehiculos.length === 0" class="py-20 text-center">
+            <p class="text-slate-400 font-bold uppercase tracking-widest italic">No hay vehículos registrados globalmente.</p>
+        </div>
+    </div>
+
+
+    <!-- VISTA NORMAL (CLIENTE) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" *ngIf="!esSuperAdmin">
+        @for (v of vehiculos; track v.placa) {
+            <ng-container *ngTemplateOutlet="vehicleCard; context: { v: v }"></ng-container>
+        } @empty {
+            <div class="col-span-full py-20 flex flex-col items-center justify-center bg-white border border-dashed border-slate-300 rounded-2xl">
+              <div class="bg-slate-50 p-6 rounded-full mb-4">
+                  <i class="bi bi-car-front text-slate-300 text-5xl"></i>
+              </div>
+              <h3 class="text-lg font-bold text-slate-700">Sin vehículos registrados</h3>
+              <p class="text-slate-500 mb-6">Comienza registrando tu primer vehículo para recibir auxilio.</p>
+              <button (click)="abrirModal()" class="btn-sx-secondary">
+                  Añadir mi primer vehículo
               </button>
             </div>
-          </div>
-
-          <div class="mb-6">
-              <h3 class="text-xl font-black text-slate-800 tracking-tight mb-1">{{ v.placa | uppercase }}</h3>
-              <p class="text-blue-600 font-bold text-sm">{{ v.marca }} {{ v.modelo }}</p>
-          </div>
-
-          <div *ngIf="esSuperAdmin && v.cliente_nombre" class="mb-6 p-4 rounded-lg bg-slate-50 border border-slate-100">
-              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Propietario</span>
-              <div class="flex items-center gap-2">
-                  <i class="bi bi-person text-slate-400"></i>
-                  <span class="text-sm font-bold text-slate-700">{{ v.cliente_nombre }}</span>
-              </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-4">
-              <div class="p-3 rounded-lg border border-slate-100">
-                  <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Color</span>
-                  <div class="flex items-center gap-2">
-                      <div class="w-3 h-3 rounded-full border border-slate-200" [style.background-color]="v.color"></div>
-                      <span class="text-xs font-bold text-slate-700">{{ v.color }}</span>
-                  </div>
-              </div>
-              <div class="p-3 rounded-lg border border-slate-100">
-                  <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Estado</span>
-                  <span class="badge-sx success">ACTIVO</span>
-              </div>
-          </div>
-        </div>
-      } @empty {
-        <div class="col-span-full py-20 flex flex-col items-center justify-center bg-white border border-dashed border-slate-300 rounded-2xl">
-          <div class="bg-slate-50 p-6 rounded-full mb-4">
-              <i class="bi bi-car-front text-slate-300 text-5xl"></i>
-          </div>
-          <h3 class="text-lg font-bold text-slate-700">Sin vehículos registrados</h3>
-          <p class="text-slate-500 mb-6">Comienza registrando tu primer vehículo para recibir auxilio.</p>
-          <button (click)="abrirModal()" class="btn-sx-secondary">
-              Añadir mi primer vehículo
-          </button>
-        </div>
-      }
+        }
     </div>
   </div>
+
+  <!-- Reusable Vehicle Card Template -->
+  <ng-template #vehicleCard let-v="v">
+    <div class="sx-card hover:border-blue-400 group relative overflow-hidden transition-all duration-300">
+        <div class="flex justify-between items-start mb-6">
+          <div class="bg-slate-50 border border-slate-100 rounded-lg px-3 py-1 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+              MODELO {{ v.anio }}
+          </div>
+          <div class="flex gap-1" *ngIf="!esSuperAdmin">
+            <button (click)="abrirModal(v)" class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
+              <i class="bi bi-pencil-square"></i>
+            </button>
+            <button (click)="eliminar(v.id)" class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
+              <i class="bi bi-trash3"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="mb-6">
+            <div class="flex items-center gap-2 mb-1">
+                <i class="bi bi-tag-fill text-blue-600 text-xs"></i>
+                <h3 class="text-xl font-black text-slate-800 tracking-tighter uppercase">{{ v.placa }}</h3>
+            </div>
+            <p class="text-slate-400 font-bold text-sm italic">{{ v.marca }} • {{ v.modelo }}</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div class="p-3 rounded-xl bg-slate-50/50 border border-slate-100">
+                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Color</span>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full border border-slate-200" [style.background-color]="v.color"></div>
+                    <span class="text-xs font-bold text-slate-700">{{ v.color }}</span>
+                </div>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50/50 border border-slate-100">
+                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Estado</span>
+                <span class="flex items-center gap-1.5 text-green-600 text-[10px] font-bold">
+                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                    ACTIVO
+                </span>
+            </div>
+        </div>
+
+        <div *ngIf="esSuperAdmin" class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <img src="https://ui-avatars.com/api/?name={{v.cliente_nombre}}&background=random" class="w-5 h-5 rounded-md">
+                <span class="text-[10px] font-black text-slate-600 uppercase">{{ v.cliente_nombre }}</span>
+            </div>
+            <i class="bi bi-shield-check text-blue-500"></i>
+        </div>
+      </div>
+  </ng-template>
+
   
   <!-- Modal Simple White -->
   @if (mostrarModal) {

@@ -59,20 +59,129 @@
                 </div>
             </div>
             
-            <div class="mt-8 p-6 bg-blue-50 border border-blue-100 rounded-2xl flex gap-4 items-start">
-                <div class="bg-blue-600 p-2 rounded-lg text-white">
+            <div class="mt-8 p-6 bg-blue-50 border border-blue-100 rounded-2xl flex flex-col gap-4" *ngIf="!miPerfil.disponible && servicioActivo">
+                <div class="flex gap-4 items-start">
+                    <div class="bg-blue-600 p-2 rounded-lg text-white">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-blue-800 font-bold mb-1">
+                            {{ servicioActivo.estado === 'en_reparacion' ? 'REPARACIÓN EN CURSO' : 'Servicio en Camino' }}
+                        </h4>
+                        <p class="text-sm text-blue-700 font-medium mb-2">
+                           {{ servicioActivo.resumen_ia || 'Asistencia en progreso...' }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Botón: Llegué al lugar (Solo si está en camino) -->
+                <button *ngIf="servicioActivo.estado === 'en_camino'" 
+                        (click)="llegueAlLugar()" 
+                        class="btn-sx-primary bg-amber-500 hover:bg-amber-600 border-none w-full h-12 shadow-lg">
+                    <i class="bi bi-geo-fill me-2"></i> YA LLEGUÉ AL LUGAR
+                </button>
+
+                <!-- Sección: Diagnóstico (Solo si está reparando) -->
+                <div class="space-y-2 animate-in" *ngIf="servicioActivo.estado === 'en_reparacion'">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-blue-800 uppercase tracking-widest">Trabajo Realizado</label>
+                            <textarea [(ngModel)]="diagnostico" 
+                                      placeholder="Describe la reparación..."
+                                      class="w-full bg-white border-blue-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none min-h-[100px]"></textarea>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-blue-800 uppercase tracking-widest">Costo Total (Bs.)</label>
+                            <input type="number" [(ngModel)]="montoFinal" 
+                                   class="w-full h-[100px] text-4xl font-black text-center bg-white border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-blue-600"
+                                   placeholder="0.00">
+                            <p class="text-[10px] text-blue-400 font-bold text-center">La comisión del 10% se descontará automáticamente.</p>
+                        </div>
+                    </div>
+                    
+                    <button (click)="finalizarServicio()" 
+                            class="btn-sx-primary bg-green-600 hover:bg-green-700 border-none w-full h-14 shadow-lg mt-2 text-lg">
+                        <i class="bi bi-check-circle-fill me-2"></i> FINALIZAR Y REGISTRAR COBRO
+                    </button>
+                </div>
+            </div>
+
+            <div class="mt-8 p-6 bg-slate-50 border border-slate-100 rounded-2xl flex gap-4 items-start" *ngIf="miPerfil.disponible">
+                <div class="bg-slate-400 p-2 rounded-lg text-white">
                     <i class="bi bi-shield-check"></i>
                 </div>
-                <p class="text-sm text-blue-800 font-medium mb-0 leading-relaxed">
+                <p class="text-sm text-slate-600 font-medium mb-0 leading-relaxed">
                     Tu seguridad es primero. Recuerda que al estar <strong>disponible</strong>, tus coordenadas podrán ser compartidas con clientes en emergencia.
                 </p>
             </div>
         </div>
     </div>
 
-    <!-- VISTA PARA EL ADMIN (Lista de técnicos) -->
-    <div *ngIf="!esTecnico" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        <div class="sx-card hover:bg-slate-50/50 group" *ngFor="let t of tecnicos">
+    <!-- VISTA PARA EL ADMIN / SUPER ADMIN (Lista de técnicos) -->
+    <div *ngIf="!esTecnico">
+        <!-- SECCIONES PARA SUPER ADMIN (SISTEMA DE ACORDEÓN) -->
+        <div *ngIf="esSuperAdmin" class="space-y-4">
+            <div *ngFor="let group of tecnicosAgrupados | keyvalue" class="animate-in">
+                <!-- Card del Taller -->
+                <div (click)="toggleGrupo(group.key)" 
+                     class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 flex items-center justify-between cursor-pointer hover:border-blue-300 hover:shadow-md transition-all group"
+                     [ngClass]="{'border-blue-600 bg-blue-50/20': grupoExpandido === group.key}">
+                    
+                    <div class="flex items-center gap-5">
+                        <div class="w-14 h-14 rounded-2xl flex items-center justify-center transition-all"
+                             [ngClass]="grupoExpandido === group.key ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-500'">
+                            <i class="bi bi-shop text-2xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-black text-slate-800 uppercase tracking-tighter mb-0">{{ group.key }}</h2>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">CUERPO TÉCNICO DE {{ $any(group.value).length }} OPERARIOS</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-4">
+                        <span class="px-4 py-1 bg-white border border-slate-100 rounded-full text-[10px] font-black text-slate-400 shadow-sm" *ngIf="grupoExpandido !== group.key">
+                            VER PERSONAL
+                        </span>
+                        <i class="bi text-xl transition-transform duration-300" 
+                           [ngClass]="grupoExpandido === group.key ? 'bi-chevron-up text-blue-600' : 'bi-chevron-down text-slate-300'"></i>
+                    </div>
+                </div>
+
+                <!-- Grid de Técnicos (Expandible) -->
+                <div *ngIf="grupoExpandido === group.key" class="pt-6 pb-10 px-4 animate-in">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div *ngFor="let t of $any(group.value)">
+                            <ng-container *ngTemplateOutlet="tecnicoCard; context: { t: t }"></ng-container>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div *ngIf="tecnicos.length === 0" class="py-20 text-center">
+                <p class="text-slate-400 font-bold uppercase tracking-widest italic">No hay personal técnico registrado en el sistema.</p>
+            </div>
+        </div>
+
+
+        <!-- VISTA SIMPLE PARA ADMIN TALLER -->
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" *ngIf="!esSuperAdmin">
+            <div *ngFor="let t of tecnicos">
+                <ng-container *ngTemplateOutlet="tecnicoCard; context: { t: t }"></ng-container>
+            </div>
+            
+            <div *ngIf="tecnicos.length === 0" class="col-span-full py-20 flex flex-col items-center justify-center bg-white border border-dashed border-slate-300 rounded-2xl">
+                <div class="bg-slate-50 p-6 rounded-full mb-4">
+                    <i class="bi bi-people text-slate-300 text-5xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-700">No hay técnicos asignados</h3>
+                <p class="text-slate-500 mb-0">Comienza vinculando personal calificado a tu taller.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reusable Technician Card Template -->
+    <ng-template #tecnicoCard let-t="t">
+        <div class="sx-card hover:bg-slate-50/50 group border-l-4" [ngClass]="t.disponible ? 'border-l-green-500' : 'border-l-red-500'">
             <div class="flex items-center gap-4 mb-6">
                 <div class="relative">
                     <img src="https://ui-avatars.com/api/?name={{t.nombre}}&background=0066FF&color=fff&bold=true" 
@@ -81,41 +190,37 @@
                          [ngClass]="t.disponible ? 'bg-green-500' : 'bg-red-500'"></div>
                 </div>
                 <div class="flex-grow">
-                    <h5 class="text-lg font-black text-slate-800 mb-0 leading-tight">{{t.nombre}}</h5>
-                    <p class="text-slate-400 text-xs font-bold truncate max-w-[150px] mb-0">{{t.email}}</p>
+                    <h5 class="text-lg font-black text-slate-800 mb-0 leading-tight uppercase tracking-tighter">{{t.nombre}}</h5>
+                    <p class="text-slate-400 text-[10px] font-bold truncate max-w-[150px] mb-0">{{t.email}}</p>
                 </div>
-                <button (click)="eliminar(t.id)" class="text-slate-300 hover:text-red-500 transition-colors">
+                <button (click)="eliminar(t.id)" class="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all" *ngIf="!esSuperAdmin">
                     <i class="bi bi-trash fs-5"></i>
                 </button>
             </div>
             
-            <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between mb-0">
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
                 <div class="flex flex-col">
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Estado de Servicio</span>
-                    <span class="badge-sx" [ngClass]="t.disponible ? 'success' : 'danger'">
-                        {{ t.disponible ? 'DISPONIBLE' : 'OCUPADO' }}
+                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Especialidad</span>
+                    <span class="text-xs font-bold text-slate-700 uppercase">{{ t.especialidad_principal || 'General' }}</span>
+                </div>
+                <div class="flex flex-col text-right">
+                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Status</span>
+                    <span class="text-[10px] font-bold" [ngClass]="t.disponible ? 'text-green-600' : 'text-red-600'">
+                        {{ t.disponible ? 'DISPONIBLE' : 'EN SERVICIO' }}
                     </span>
                 </div>
-                <!-- El Admin ya no tiene switch, solo ve el estado -->
-                <div class="text-slate-300">
-                    <i class="bi" [ngClass]="t.disponible ? 'bi-check-circle-fill text-green-500' : 'bi-dash-circle-fill text-red-500'"></i>
+            </div>
+
+            <div *ngIf="esSuperAdmin" class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i class="bi bi-geo-alt-fill text-blue-500 text-[10px]"></i>
+                    <span class="text-[10px] font-black text-slate-500 uppercase tracking-tight">{{ t.taller_nombre }}</span>
                 </div>
-            </div>
-
-            <div *ngIf="esSuperAdmin && t.taller_nombre" class="mt-4 flex items-center gap-2">
-                <div class="w-1 h-4 bg-blue-600 rounded-full"></div>
-                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-tight">{{ t.taller_nombre }}</span>
+                <span class="text-[9px] font-bold text-slate-300">ID: #{{ t.id }}</span>
             </div>
         </div>
+    </ng-template>
 
-        <div *ngIf="tecnicos.length === 0" class="col-span-full py-20 flex flex-col items-center justify-center bg-white border border-dashed border-slate-300 rounded-2xl">
-            <div class="bg-slate-50 p-6 rounded-full mb-4">
-                <i class="bi bi-people text-slate-300 text-5xl"></i>
-            </div>
-            <h3 class="text-lg font-bold text-slate-700">No hay técnicos asignados</h3>
-            <p class="text-slate-500 mb-0">Comienza vinculando personal calificado a tu taller.</p>
-        </div>
-    </div>
 
     <!-- Modal Simple White -->
     <div class="fixed inset-0 z-[1060] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade" *ngIf="mostrarModal">

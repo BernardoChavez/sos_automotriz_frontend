@@ -13,54 +13,114 @@
         <i class="bi bi-grid"></i>
         <span>Dashboard</span>
       </a>
-  
-      <div class="px-4 mt-6 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Módulos</div>
 
-      <li class="list-none" *ngIf="authService.hasPermission('vehiculos.cliente')">
+      <a routerLink="/dashboard/notificaciones" routerLinkActive="active" class="nav-link">
+        <i class="bi bi-bell"></i>
+        <span>Notificaciones</span>
+      </a>
+  
+      <!-- SECCIÓN CLIENTE (Sistemas y Vehículos) -->
+      <div class="px-4 mt-6 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest" *ngIf="authService.currentUser?.rol === 'cliente' || authService.currentUser?.rol === 'super_admin'">
+        Módulo Cliente
+      </div>
+      
+      <li class="list-none" *ngIf="authService.currentUser?.rol === 'cliente' || authService.currentUser?.rol === 'super_admin'">
         <a routerLink="/dashboard/cliente/vehiculos" routerLinkActive="active" class="nav-link">
           <i class="bi bi-car-front"></i>
           <span>Mis Vehículos</span>
         </a>
       </li>
-  
-      <li class="list-none" *ngIf="authService.hasPermission('talleres.registrar')">
+
+      <li class="list-none" *ngIf="authService.currentUser?.rol === 'cliente' || authService.currentUser?.rol === 'super_admin'">
+        <a routerLink="/dashboard/cliente/solicitar-ayuda" routerLinkActive="active" class="nav-link text-red-500 font-bold hover:bg-red-50">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          <span>SOLICITAR AYUDA</span>
+        </a>
+      </li>
+
+      <li class="list-none" *ngIf="authService.currentUser?.rol === 'cliente' || authService.currentUser?.rol === 'super_admin'">
+        <a routerLink="/dashboard/cliente/historial" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-clock-history"></i>
+          <span>Historial Asistencias</span>
+        </a>
+      </li>
+
+      <!-- SECCIÓN TALLER / OPERACIONES -->
+      <div class="px-4 mt-6 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest" *ngIf="authService.currentUser?.rol === 'admin_taller' || authService.currentUser?.rol === 'tecnico' || authService.currentUser?.rol === 'super_admin'">
+        Operaciones Taller
+      </div>
+
+      <li class="list-none" *ngIf="authService.currentUser?.rol === 'admin_taller' || authService.currentUser?.rol === 'super_admin'">
+        <a routerLink="/dashboard/taller/despacho" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-broadcast"></i>
+          <span>Despacho IA</span>
+        </a>
+      </li>
+
+      <li class="list-none" *ngIf="authService.currentUser?.rol === 'tecnico' || authService.currentUser?.rol === 'super_admin'">
+        <a routerLink="/dashboard/tecnico/mis-trabajos" routerLinkActive="active" class="nav-link bg-blue-50/50 text-blue-700 font-bold">
+        <i class="bi bi-briefcase-fill"></i>
+        <span>Trabajos Activos</span>
+      </a>
+
+      <a routerLink="/dashboard/tecnico/historial" routerLinkActive="active" class="nav-link">
+        <i class="bi bi-clock-history"></i>
+        <span>Mi Historial</span>
+      </a>
+      </li>
+
+      <li class="list-none" *ngIf="authService.currentUser?.rol === 'admin_taller' || authService.currentUser?.rol === 'super_admin'">
+        <a routerLink="/dashboard/taller/tecnicos" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-wrench-adjustable"></i>
+          <span>Cuerpo Técnico</span>
+        </a>
+      </li>
+
+      <li class="list-none" *ngIf="authService.currentUser?.rol === 'admin_taller' || authService.currentUser?.rol === 'super_admin'">
+        <a routerLink="/dashboard/taller/configuracion" routerLinkActive="active" class="nav-link">
+        <i class="bi bi-gear-fill"></i>
+        <span>Configurar Taller</span>
+      </a>
+
+      <a routerLink="/dashboard/taller/historial" routerLinkActive="active" class="nav-link">
+        <i class="bi bi-journal-text"></i>
+        <span>Historial Taller</span>
+      </a>
+      </li>
+
+      <!-- SECCIÓN ADMINISTRACIÓN GLOBAL -->
+      <div class="px-4 mt-6 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest" *ngIf="authService.currentUser?.rol === 'super_admin'">
+        Administración Global
+      </div>
+
+      <li class="list-none" *ngIf="authService.currentUser?.rol === 'super_admin'">
         <a routerLink="/dashboard/admin/talleres" routerLinkActive="active" class="nav-link">
           <i class="bi bi-building"></i>
-          <span>Talleres</span>
+          <span>Gestión de Talleres</span>
         </a>
       </li>
-  
-      <li class="list-none" *ngIf="authService.hasPermission('usuarios.gestionar')">
+
+      <li class="list-none" *ngIf="authService.currentUser?.rol === 'super_admin'">
         <a routerLink="/dashboard/admin/usuarios" routerLinkActive="active" class="nav-link">
           <i class="bi bi-people"></i>
-          <span>Usuarios</span>
+          <span>Gestión de Usuarios</span>
         </a>
       </li>
-  
+
       <li class="list-none" *ngIf="authService.currentUser?.rol === 'super_admin'">
         <a routerLink="/dashboard/admin/roles-permisos" routerLinkActive="active" class="nav-link">
-          <i class="bi bi-lock"></i>
+          <i class="bi bi-shield-lock"></i>
           <span>Roles y Permisos</span>
         </a>
       </li>
-  
-      <div class="px-4 mt-6 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest" *ngIf="authService.currentUser?.rol === 'admin_taller'">
-        Gestión Taller
-      </div>
 
-      <li class="list-none" *ngIf="authService.hasPermission('tecnicos.ver') || authService.currentUser?.rol === 'tecnico'">
-        <a routerLink="/dashboard/taller/tecnicos" routerLinkActive="active" class="nav-link">
-          <i class="bi" [ngClass]="authService.currentUser?.rol === 'tecnico' ? 'bi-activity' : 'bi-wrench-adjustable'"></i>
-          <span>{{ authService.currentUser?.rol === 'tecnico' ? 'Mi Estado' : 'Mis Técnicos' }}</span>
+      <li class="list-none" *ngIf="authService.currentUser?.rol === 'super_admin'">
+        <a routerLink="/dashboard/admin/auditoria" routerLinkActive="active" class="nav-link">
+          <i class="bi bi-journal-text"></i>
+          <span>Bitácora del Sistema</span>
         </a>
       </li>
 
-      <li class="list-none" *ngIf="authService.currentUser?.rol === 'admin_taller'">
-        <a routerLink="/dashboard/taller/configuracion" routerLinkActive="active" class="nav-link">
-          <i class="bi bi-sliders"></i>
-          <span>Configuración</span>
-        </a>
-      </li>
 
       <div class="px-4 mt-6 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Cuenta</div>
       <li class="list-none">
@@ -77,4 +137,4 @@
         <span>Cerrar Sesión</span>
       </button>
     </div>
-  </div>
+</div>

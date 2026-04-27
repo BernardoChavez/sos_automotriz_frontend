@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Output, EventEmitter } from '@angular/core';
 import { CommonModule, UpperCasePipe } from '@angular/common'; // Importamos UpperCasePipe
 import { AuthService } from '../../../core/services/auth';
 
@@ -11,4 +11,10 @@ import { AuthService } from '../../../core/services/auth';
 })
 export class NavbarComponent {
   public authService = inject(AuthService); 
+
+  @Output() toggleSidebar = new EventEmitter<void>();
+
+  onToggleSidebar() {
+    this.toggleSidebar.emit();
+  }
 }

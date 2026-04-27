@@ -17,11 +17,13 @@
                     <tr>
                         <th>Identificación</th>
                         <th>Servicio</th>
+                        <th>Administrador / Propietario</th>
                         <th>Dirección / Ubicación</th>
                         <th>Estado Operativo</th>
                         <th class="text-right">Operaciones</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     <tr *ngFor="let t of talleres">
                         <td>
@@ -38,20 +40,33 @@
                         <td>
                             <span class="badge-sx info uppercase font-black tracking-tighter">{{t.especialidad}}</span>
                         </td>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <i class="bi bi-person-badge text-blue-600"></i>
+                                <span class="text-sm font-black text-slate-700 uppercase tracking-tighter">{{t.admin_nombre || 'Sin Asignar'}}</span>
+                            </div>
+                        </td>
                         <td class="max-w-[200px]">
                             <p class="text-xs text-slate-500 truncate mb-0">{{t.direccion}}</p>
                         </td>
+
                         <td>
-                            <span class="badge-sx" [ngClass]="t.esta_activo ? 'success' : 'danger'">
-                                {{t.esta_activo ? 'ACTIVO' : 'INACTIVO'}}
+                            <span class="badge-sx" 
+                                  [ngClass]="{'success': getEstado(t) === 'ACTIVO', 'danger': getEstado(t) === 'INACTIVO', 'warning': getEstado(t) === 'CERRADO (HORARIO)'}">
+                                {{ getEstado(t) }}
                             </span>
                         </td>
                         <td class="text-right">
                             <div class="flex justify-end gap-2">
-                                <button class="p-2 text-slate-400 hover:text-blue-600"><i class="bi bi-gear-fill"></i></button>
+                                <button [routerLink]="['/dashboard/admin/usuarios']" [queryParams]="{taller: t.id}" 
+                                        class="p-2 text-slate-400 hover:text-green-600 transition-all" title="Ver Técnicos">
+                                    <i class="bi bi-person-badge-fill"></i>
+                                </button>
+                                <button (click)="abrirModal(t) " class="p-2 text-slate-400 hover:text-blue-600"><i class="bi bi-gear-fill"></i></button>
                                 <button (click)="eliminar(t.id)" class="p-2 text-slate-400 hover:text-red-600"><i class="bi bi-trash-fill"></i></button>
                             </div>
                         </td>
+
                     </tr>
                 </tbody>
             </table>
@@ -63,7 +78,7 @@
 <div *ngIf="mostrarModal" class="fixed inset-0 z-[1060] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
         <div class="p-8 border-b border-slate-100 flex justify-between items-center">
-            <h2 class="text-xl font-black text-slate-800 mb-0">Registrar Centro de Servicio</h2>
+            <h2 class="text-xl font-black text-slate-800 mb-0">{{ editando ? 'Modificar Taller' : 'Registrar Centro de Servicio' }}</h2>
             <button (click)="cerrarModal()" class="text-slate-400 hover:text-slate-600"><i class="bi bi-x-lg"></i></button>
         </div>
         
@@ -78,15 +93,27 @@
                     <div>
                         <label class="form-label">Especialidad</label>
                         <select name="especialidad" [(ngModel)]="nuevoTaller.especialidad" class="form-select">
-                            <option value="General">Mecánica General</option>
-                            <option value="Mecánica">Mecánica Avanzada</option>
-                            <option value="Electricidad">Sistema Eléctrico</option>
-                            <option value="Latonería">Latonería y Pintura</option>
+                            <option value="Mecánica General">Mecánica General</option>
+                            <option value="Electricista Automotriz">Electricista Automotriz</option>
+                            <option value="Taller de Colisión">Taller de Colisión</option>
+                            <option value="Servicio de Neumáticos">Servicio de Neumáticos</option>
+                            <option value="General">Otros / General</option>
                         </select>
                     </div>
                     <div>
                         <label class="form-label">Capacidad Teórica</label>
                         <input type="number" name="capacidad" [(ngModel)]="nuevoTaller.capacidad_teorica" class="form-control" placeholder="10">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="form-label">Latitud</label>
+                        <input type="number" name="lat" [(ngModel)]="nuevoTaller.latitud" class="form-control" step="0.000001">
+                    </div>
+                    <div>
+                        <label class="form-label">Longitud</label>
+                        <input type="number" name="lng" [(ngModel)]="nuevoTaller.longitud" class="form-control" step="0.000001">
                     </div>
                 </div>
 
@@ -102,7 +129,7 @@
 
                 <div class="mt-8 flex justify-end gap-3">
                     <button type="button" (click)="cerrarModal()" class="btn-sx-secondary">Descartar</button>
-                    <button type="submit" class="btn-sx-primary px-8">Guardar Taller</button>
+                    <button type="submit" class="btn-sx-primary px-8">{{ editando ? 'Actualizar Cambios' : 'Guardar Taller' }}</button>
                 </div>
             </form>
         </div>

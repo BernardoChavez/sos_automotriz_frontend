@@ -1,165 +1,307 @@
-<div class="animate-in">
+<div class="animate-in max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Pantalla de Carga -->
-    <div *ngIf="loading" class="flex flex-col items-center justify-center py-20">
-        <div class="spinner-border text-blue-600 mb-4" role="status"></div>
-        <p class="text-slate-400 font-bold tracking-widest text-xs uppercase">Cargando Tablero...</p>
+    <div *ngIf="loading" class="flex flex-col items-center justify-center py-32">
+        <div class="relative w-20 h-20">
+            <div class="absolute inset-0 border-4 border-blue-100 rounded-full"></div>
+            <div class="absolute inset-0 border-4 border-blue-600 rounded-full border-t-transparent animate-spin"></div>
+        </div>
+        <p class="mt-6 text-slate-400 font-black tracking-[0.2em] text-[10px] uppercase italic">Sincronizando Sistema...</p>
     </div>
 
     <div *ngIf="!loading">
-        <div class="mb-8">
-            <h1 class="text-3xl font-black text-slate-800 mb-1">¡Hola, {{authService.currentUser?.nombre}}!</h1>
-            <p class="text-slate-500 font-medium">Bienvenido a tu panel de control de {{getRoleName()}}</p>
-        </div>
-
-        <!-- Stats Section for Super Admin -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" *ngIf="authService.currentUser?.rol === 'super_admin' && resumen">
-            <div class="stat-card cursor-pointer hover:translate-y-[-4px] transition-all" routerLink="/dashboard/admin/usuarios">
-                <div class="icon-wrapper bg-blue-50 text-blue-600">
-                    <i class="bi bi-people text-2xl"></i>
+        <!-- Header de Bienvenida Premium -->
+        <div class="relative overflow-hidden rounded-[3rem] bg-slate-900 p-10 md:p-16 mb-12 shadow-2xl shadow-slate-200">
+            <div class="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-blue-600/20 to-transparent"></div>
+            <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-blue-500/10 blur-[80px] rounded-full"></div>
+            
+            <div class="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
+                <div class="text-center md:text-left">
+                    <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-600/20 border border-blue-500/30 rounded-full text-blue-400 text-[10px] font-black uppercase tracking-widest mb-6">
+                        <span class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></span>
+                        Sesión Activa: {{ getRoleName() }}
+                    </div>
+                    <h1 class="text-4xl md:text-6xl font-black text-white italic tracking-tighter mb-4 uppercase">
+                        ¡Hola, <span class="text-blue-500">{{ authService.currentUser?.nombre?.split(' ')[0] }}</span>!
+                    </h1>
+                    <p class="text-slate-400 text-lg font-medium max-w-xl">
+                        {{ authService.currentUser?.rol === 'super_admin' ? 'Tienes el control total de la plataforma. Supervisa emergencias y gestiona talleres globalmente.' : 'Estamos listos para asistirte en cualquier emergencia vehicular 24/7.' }}
+                    </p>
                 </div>
-                <div>
-                    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Usuarios</p>
-                    <h3 class="text-2xl font-black text-slate-800 mb-0">{{resumen.usuarios}}</h3>
-                </div>
-            </div>
-            <div class="stat-card cursor-pointer hover:translate-y-[-4px] transition-all" routerLink="/dashboard/admin/talleres">
-                <div class="icon-wrapper bg-green-50 text-green-600">
-                    <i class="bi bi-building text-2xl"></i>
-                </div>
-                <div>
-                    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Talleres</p>
-                    <h3 class="text-2xl font-black text-slate-800 mb-0">{{resumen.talleres}}</h3>
-                </div>
-            </div>
-            <div class="stat-card cursor-pointer hover:translate-y-[-4px] transition-all">
-                <div class="icon-wrapper bg-amber-50 text-amber-600">
-                    <i class="bi bi-car-front-fill text-2xl"></i>
-                </div>
-                <div>
-                    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Vehículos</p>
-                    <h3 class="text-2xl font-black text-slate-800 mb-0">{{resumen.vehiculos || 0}}</h3>
-                </div>
-            </div>
-            <div class="stat-card cursor-pointer hover:translate-y-[-4px] transition-all" routerLink="/dashboard/admin/roles-permisos">
-                <div class="icon-wrapper bg-slate-100 text-slate-800">
-                    <i class="bi bi-lock-fill text-2xl"></i>
-                </div>
-                <div>
-                    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Seguridad</p>
-                    <h3 class="text-lg font-bold text-slate-600 mb-0">Roles</h3>
+                
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-24 h-24 rounded-[2rem] bg-white/5 border border-white/10 backdrop-blur-xl flex items-center justify-center shadow-inner">
+                        <i class="bi bi-shield-check text-4xl text-blue-500"></i>
+                    </div>
+                    <span class="text-white/40 text-[9px] font-black uppercase tracking-[0.3em]">Status: Protegido</span>
                 </div>
             </div>
         </div>
 
-        <!-- Stats Section for Admin Taller -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" *ngIf="authService.currentUser?.rol === 'admin_taller' && resumen">
-            <div class="stat-card cursor-pointer hover:translate-y-[-4px] transition-all" routerLink="/dashboard/taller/tecnicos">
-                <div class="icon-wrapper bg-blue-50 text-blue-600">
-                    <i class="bi bi-wrench-adjustable text-2xl"></i>
-                </div>
-                <div>
-                    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Personal</p>
-                    <h3 class="text-2xl font-black text-slate-800 mb-0">{{resumen.tecnicos}}</h3>
-                </div>
-            </div>
-            <div class="stat-card cursor-pointer hover:translate-y-[-4px] transition-all">
-                <div class="icon-wrapper bg-green-50 text-green-600">
-                    <i class="bi bi-calendar-check text-2xl"></i>
-                </div>
-                <div>
-                    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Servicios</p>
-                    <h3 class="text-2xl font-black text-slate-800 mb-0">{{resumen.servicios_hoy}}</h3>
-                </div>
-            </div>
-            <div class="stat-card cursor-pointer hover:translate-y-[-4px] transition-all" routerLink="/dashboard/taller/configuracion">
-                <div class="icon-wrapper bg-slate-50 text-slate-500">
-                    <i class="bi bi-activity text-2xl"></i>
-                </div>
-                <div>
-                    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Estado</p>
-                    <h3 class="text-xl font-bold text-green-600 mb-0">{{resumen.estado_taller}}</h3>
+        <!-- SECCIÓN DE EMERGENCIA ACTIVA (Solo Clientes) -->
+        <div *ngIf="incidenteActivo" class="mb-12 animate-bounce-slow">
+            <div class="bg-gradient-to-r from-red-600 to-rose-700 rounded-[2.5rem] p-8 text-white shadow-2xl shadow-red-200 border-4 border-white/10 relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+                <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="flex items-center gap-6">
+                        <div class="w-20 h-20 bg-white/20 backdrop-blur-md rounded-[1.5rem] flex items-center justify-center shadow-lg">
+                            <i class="bi bi-geo-fill text-3xl animate-pulse"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-black italic uppercase tracking-tighter mb-1">Emergencia en Curso</h2>
+                            <p class="text-red-100 font-medium">Estado: <span class="font-black uppercase tracking-widest text-xs">{{ incidenteActivo.estado.replace('_', ' ') }}</span></p>
+                        </div>
+                    </div>
+                    <button [routerLink]="['/dashboard/cliente/rastreo', incidenteActivo.id]" 
+                            class="px-10 py-4 bg-white text-red-600 font-black rounded-2xl shadow-xl hover:scale-105 transition-all uppercase tracking-widest text-xs">
+                        VER SEGUIMIENTO EN VIVO
+                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- Technician View -->
-        <div class="mt-8" *ngIf="authService.currentUser?.rol === 'tecnico'">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8" *ngIf="resumen">
-                <div class="stat-card cursor-pointer hover:translate-y-[-4px] transition-all" routerLink="/dashboard/taller/tecnicos">
-                    <div class="icon-wrapper bg-blue-50 text-blue-600">
-                        <i class="bi bi-activity text-2xl"></i>
+        <!-- DASHBOARD SUPER ADMIN (CU31, CU32, CU33) -->
+        <div *ngIf="authService.currentUser?.rol === 'super_admin' && resumen" class="space-y-12">
+            <!-- Métrica Globales Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Card Usuarios -->
+                <div class="bg-white p-8 rounded-[2.5rem] shadow-xl border border-slate-50 hover:border-blue-200 transition-all group cursor-pointer" routerLink="/dashboard/admin/usuarios">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
+                            <i class="bi bi-people-fill text-2xl"></i>
+                        </div>
+                        <span class="text-[10px] font-black text-slate-300 uppercase tracking-widest">Global</span>
+                    </div>
+                    <h3 class="text-4xl font-black text-slate-900 tracking-tighter mb-1">{{ resumen.usuarios }}</h3>
+                    <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Usuarios Registrados</p>
+                </div>
+
+                <!-- Card Talleres -->
+                <div class="bg-white p-8 rounded-[2.5rem] shadow-xl border border-slate-50 hover:border-green-200 transition-all group cursor-pointer" routerLink="/dashboard/admin/talleres">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="w-14 h-14 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center group-hover:bg-green-600 group-hover:text-white transition-all">
+                            <i class="bi bi-shop text-2xl"></i>
+                        </div>
+                        <span class="text-[10px] font-black text-slate-300 uppercase tracking-widest">Red SOS</span>
+                    </div>
+                    <h3 class="text-4xl font-black text-slate-900 tracking-tighter mb-1">{{ resumen.talleres }}</h3>
+                    <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Centros de Auxilio</p>
+                </div>
+
+                <!-- Card Ingresos (CU32) -->
+                <div class="bg-slate-900 p-8 rounded-[2.5rem] shadow-2xl border border-slate-800 hover:border-blue-500 transition-all group overflow-hidden relative">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-blue-600/10 blur-2xl rounded-full"></div>
+                    <div class="relative z-10">
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-900/40">
+                                <i class="bi bi-currency-dollar text-2xl"></i>
+                            </div>
+                            <span class="text-[10px] font-black text-blue-400 uppercase tracking-widest">Plataforma</span>
+                        </div>
+                        <h3 class="text-4xl font-black text-white tracking-tighter mb-1">{{ resumen.ingresos | currency:'Bs. ' }}</h3>
+                        <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Comisiones</p>
+                    </div>
+                </div>
+
+                <!-- Card Seguridad (CU33) -->
+                <div class="bg-white p-8 rounded-[2.5rem] shadow-xl border border-slate-50 hover:border-amber-200 transition-all group cursor-pointer" routerLink="/dashboard/admin/roles-permisos">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="w-14 h-14 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-all">
+                            <i class="bi bi-shield-lock-fill text-2xl"></i>
+                        </div>
+                        <span class="text-[10px] font-black text-slate-300 uppercase tracking-widest">Auditoría</span>
+                    </div>
+                    <h3 class="text-4xl font-black text-slate-900 tracking-tighter mb-1">RBAC</h3>
+                    <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Roles y Permisos</p>
+                </div>
+            </div>
+
+            <!-- Dashboard Analytics Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- IA Dispatch Activity -->
+                <div class="lg:col-span-2 bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100 relative overflow-hidden">
+                    <div class="absolute top-10 right-10 flex gap-2">
+                        <span class="px-3 py-1 bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-widest rounded-lg">Gemini 1.5 Flash</span>
+                        <span class="px-3 py-1 bg-green-50 text-green-600 text-[10px] font-black uppercase tracking-widest rounded-lg">Online</span>
+                    </div>
+                    
+                    <h4 class="text-2xl font-black text-slate-800 italic uppercase tracking-tighter mb-8">Actividad de <span class="text-blue-600">Despacho IA</span></h4>
+                    
+                    <div class="space-y-8">
+                        <div class="relative pl-12 border-l-2 border-slate-100 pb-2">
+                            <div class="absolute -left-[11px] top-0 w-5 h-5 bg-blue-600 rounded-full border-4 border-white shadow-md"></div>
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-sm font-black text-slate-800">Análisis Multimodal (Voz/Imagen)</span>
+                                <span class="text-[10px] font-bold text-slate-400">Hace 2 min</span>
+                            </div>
+                            <p class="text-sm text-slate-500 font-medium italic">Transcripción automática: "Tengo un problema con la batería en la zona norte..."</p>
+                        </div>
+                        <div class="relative pl-12 border-l-2 border-slate-100">
+                            <div class="absolute -left-[11px] top-0 w-5 h-5 bg-slate-200 rounded-full border-4 border-white"></div>
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-sm font-black text-slate-400">Clasificación de Gravedad</span>
+                                <span class="text-[10px] font-bold text-slate-400">Hace 5 min</span>
+                            </div>
+                            <p class="text-sm text-slate-300 font-medium">Asignación automática a taller mecánico especializado en electricidad.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Eficiencia Operativa -->
+                <div class="bg-slate-900 p-10 rounded-[3rem] text-white shadow-2xl relative overflow-hidden group">
+                    <div class="absolute -bottom-20 -right-20 w-64 h-64 bg-blue-600/20 blur-[60px] rounded-full transition-all group-hover:bg-blue-600/30"></div>
+                    <h4 class="text-xl font-black italic uppercase tracking-tighter mb-8">Eficiencia <span class="text-blue-500">Global</span></h4>
+                    
+                    <div class="grid grid-cols-1 gap-6">
+                        <div class="p-6 bg-white/5 border border-white/10 rounded-3xl backdrop-blur-sm">
+                            <p class="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-2">Respuesta Promedio</p>
+                            <div class="flex items-end gap-2">
+                                <h5 class="text-4xl font-black italic tracking-tighter">14.2</h5>
+                                <span class="text-slate-400 font-black text-xs mb-1">MINUTOS</span>
+                            </div>
+                        </div>
+                        <div class="p-6 bg-white/5 border border-white/10 rounded-3xl backdrop-blur-sm">
+                            <p class="text-[10px] font-black text-green-400 uppercase tracking-widest mb-2">Satisfacción Global</p>
+                            <div class="flex items-center gap-4">
+                                <h5 class="text-4xl font-black italic tracking-tighter">4.9</h5>
+                                <div class="flex text-amber-400 text-xs">
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DASHBOARD ADMIN TALLER -->
+        <div *ngIf="authService.currentUser?.rol === 'admin_taller' && resumen" class="space-y-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="stat-card p-8 md:p-10 rounded-[2.5rem] bg-white border border-slate-100 shadow-xl group hover:border-blue-600 transition-all cursor-pointer" routerLink="/dashboard/taller/tecnicos">
+                    <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                        <i class="bi bi-wrench-adjustable text-3xl"></i>
+                    </div>
+                    <h3 class="text-4xl font-black text-slate-900 mb-1">{{ resumen.tecnicos }}</h3>
+                    <p class="text-slate-500 font-black uppercase tracking-widest text-[10px]">Técnicos Activos</p>
+                </div>
+
+                <div class="stat-card p-10 rounded-[2.5rem] bg-white border border-slate-100 shadow-xl group hover:border-green-600 transition-all">
+                    <div class="w-16 h-16 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-600 group-hover:text-white transition-all">
+                        <i class="bi bi-calendar-check text-3xl"></i>
+                    </div>
+                    <h3 class="text-4xl font-black text-slate-900 mb-1">{{ resumen.servicios_hoy }}</h3>
+                    <p class="text-slate-500 font-black uppercase tracking-widest text-[10px]">Servicios Hoy</p>
+                </div>
+
+                <div class="stat-card p-8 md:p-10 rounded-[2.5rem] bg-slate-900 text-white shadow-2xl group hover:border-blue-500 transition-all border border-slate-800">
+                    <div class="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-blue-900/40">
+                        <i class="bi bi-activity text-3xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-black text-white mb-1 uppercase tracking-tighter">{{ resumen.estado_taller }}</h3>
+                    <p class="text-slate-400 font-black uppercase tracking-widest text-[10px]">Estado Operativo</p>
+                </div>
+
+                <div class="stat-card p-8 md:p-10 rounded-[2.5rem] bg-gradient-to-br from-green-500 to-green-700 text-white shadow-xl shadow-green-200 group hover:scale-105 transition-all">
+                    <div class="w-16 h-16 bg-white/20 text-white rounded-2xl flex items-center justify-center mb-6 backdrop-blur-md">
+                        <i class="bi bi-cash-stack text-3xl"></i>
+                    </div>
+                    <h3 class="text-3xl font-black text-white mb-1 tracking-tighter">{{ resumen.ingresos | currency:'Bs. ' }}</h3>
+                    <p class="text-green-100 font-black uppercase tracking-widest text-[10px]">Ingresos Totales (90%)</p>
+                </div>
+            </div>
+
+            <div class="bg-blue-600 rounded-[3rem] p-12 text-white flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl shadow-blue-200">
+                <div class="max-w-xl text-center md:text-left">
+                    <h4 class="text-3xl font-black italic uppercase tracking-tighter mb-4">Optimiza tu Operación</h4>
+                    <p class="text-blue-100 text-lg font-medium">Configura tus horarios, especialidades y zonas de cobertura geográfica para que el motor de IA te asigne más emergencias.</p>
+                </div>
+                <button routerLink="/dashboard/taller/configuracion" class="px-10 py-5 bg-white text-blue-600 font-black rounded-2xl shadow-xl hover:scale-105 transition-all uppercase tracking-widest text-xs">
+                    CONFIGURAR TALLER
+                </button>
+            </div>
+        </div>
+
+        <!-- DASHBOARD TÉCNICO -->
+        <div *ngIf="authService.currentUser?.rol === 'tecnico' && resumen" class="space-y-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="p-10 rounded-[3rem] bg-white border border-slate-100 shadow-xl flex items-center gap-8 group hover:border-blue-600 transition-all cursor-pointer" routerLink="/dashboard/taller/tecnicos">
+                    <div class="w-20 h-20 bg-blue-50 text-blue-600 rounded-[1.5rem] flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
+                        <i class="bi bi-person-badge-fill text-4xl"></i>
                     </div>
                     <div>
-                        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Mi Estado</p>
-                        <h3 class="text-xl font-bold mb-0" [ngClass]="resumen.disponible ? 'text-green-600' : 'text-red-600'">
-                            {{ resumen.disponible ? 'DISPONIBLE' : 'OCUPADO' }}
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Mi Disponibilidad</p>
+                        <h3 class="text-3xl font-black italic tracking-tighter" [ngClass]="resumen.disponible ? 'text-green-600' : 'text-red-600'">
+                            {{ resumen.disponible ? 'DISPONIBLE' : 'EN SERVICIO' }}
                         </h3>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="icon-wrapper bg-amber-50 text-amber-600">
-                        <i class="bi bi-star-fill text-2xl"></i>
+
+                <div class="p-10 rounded-[3rem] bg-slate-900 text-white shadow-2xl flex items-center gap-8 border border-slate-800">
+                    <div class="w-20 h-20 bg-white/10 rounded-[1.5rem] flex items-center justify-center">
+                        <i class="bi bi-star-fill text-4xl text-amber-400"></i>
                     </div>
                     <div>
-                        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Especialidad</p>
-                        <h3 class="text-lg font-black text-slate-800 mb-0">{{ resumen.especialidad || 'General' }}</h3>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Especialidad</p>
+                        <h3 class="text-3xl font-black italic tracking-tighter">{{ resumen.especialidad || 'General' }}</h3>
                     </div>
                 </div>
             </div>
 
-            <div class="sx-card border-none shadow-sm flex flex-col md:flex-row items-center gap-8 p-12 bg-slate-900 text-white">
-                <div class="bg-slate-800 p-8 rounded-full">
-                    <i class="bi bi-person-badge text-blue-400 text-6xl"></i>
+            <div class="bg-slate-50 border-2 border-dashed border-slate-200 rounded-[3rem] p-16 text-center">
+                <div class="w-24 h-24 bg-white rounded-[2rem] shadow-lg flex items-center justify-center mx-auto mb-8">
+                    <i class="bi bi-broadcast text-blue-600 text-5xl animate-pulse"></i>
                 </div>
-                <div class="text-center md:text-left">
-                    <h2 class="text-3xl font-black mb-2 text-white">Panel Operativo</h2>
-                    <p class="text-slate-400 max-w-md mb-6 font-medium">
-                        Tu disponibilidad es clave para el sistema. Asegúrate de estar en línea cuando estés listo para recibir emergencias.
-                    </p>
-                    <button routerLink="/dashboard/taller/tecnicos" class="btn-sx-primary px-8 py-3 bg-blue-600 border-none">
-                        Gestionar Mi Estado
-                    </button>
+                <h4 class="text-2xl font-black text-slate-800 italic uppercase tracking-tighter mb-4">Esperando Emergencias</h4>
+                <p class="text-slate-500 font-medium max-w-md mx-auto">
+                    Asegúrate de tener activa tu geolocalización en tiempo real para que los clientes cercanos puedan solicitar tu auxilio.
+                </p>
+            </div>
+        </div>
+
+        <!-- DASHBOARD CLIENTE -->
+        <div *ngIf="authService.currentUser?.rol === 'cliente' && resumen" class="space-y-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="p-10 rounded-[3rem] bg-white border border-slate-100 shadow-xl flex items-center gap-8 group hover:border-blue-600 transition-all cursor-pointer" routerLink="/dashboard/cliente/vehiculos">
+                    <div class="w-20 h-20 bg-blue-50 text-blue-600 rounded-[1.5rem] flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
+                        <i class="bi bi-car-front-fill text-4xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Flota Vehicular</p>
+                        <h3 class="text-4xl font-black text-slate-900 tracking-tighter">{{ resumen.vehiculos || 0 }}</h3>
+                    </div>
+                </div>
+
+                <div class="p-10 rounded-[3rem] bg-slate-900 text-white shadow-2xl flex items-center gap-8 border border-slate-800">
+                    <div class="w-20 h-20 bg-green-500 text-white rounded-[1.5rem] flex items-center justify-center shadow-lg shadow-green-900/40">
+                        <i class="bi bi-shield-check text-4xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Protección SOS</p>
+                        <h3 class="text-3xl font-black italic tracking-tighter text-green-500">ACTIVA</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative overflow-hidden rounded-[3rem] bg-gradient-to-br from-blue-700 to-indigo-900 p-12 md:p-20 shadow-2xl shadow-blue-300">
+                <div class="absolute -top-20 -right-20 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
+                <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
+                    <div class="text-center md:text-left">
+                        <h4 class="text-3xl md:text-4xl font-black text-white italic uppercase tracking-tighter mb-6">¿Necesitas ayuda ahora mismo?</h4>
+                        <p class="text-blue-100 text-lg font-medium mb-10 max-w-lg">Reporta un incidente con voz o fotografías y nuestra IA asignará al mejor técnico en cuestión de segundos.</p>
+                        <button routerLink="/dashboard/cliente/solicitar-ayuda" class="px-12 py-5 bg-white text-blue-700 font-black rounded-2xl shadow-2xl hover:scale-105 transition-all uppercase tracking-widest text-xs">
+                            SOLICITAR AUXILIO SOS
+                        </button>
+                    </div>
+                    <div class="w-48 h-48 bg-white/20 backdrop-blur-xl rounded-[2.5rem] border border-white/30 flex items-center justify-center shadow-inner">
+                        <i class="bi bi-megaphone-fill text-6xl text-white animate-bounce-slow"></i>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Client View -->
-        <div class="mt-8" *ngIf="authService.currentUser?.rol === 'cliente'">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8" *ngIf="resumen">
-                <div class="stat-card cursor-pointer hover:translate-y-[-4px] transition-all" routerLink="/dashboard/cliente/vehiculos">
-                    <div class="icon-wrapper bg-blue-50 text-blue-600">
-                        <i class="bi bi-car-front-fill text-2xl"></i>
-                    </div>
-                    <div>
-                        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Mis Vehículos</p>
-                        <h3 class="text-2xl font-black text-slate-800 mb-0">{{resumen.vehiculos || 0}}</h3>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="icon-wrapper bg-green-50 text-green-600">
-                        <i class="bi bi-shield-check text-2xl"></i>
-                    </div>
-                    <div>
-                        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-0">Estado</p>
-                        <h3 class="text-xl font-bold text-green-600 mb-0">Protegido</h3>
-                    </div>
-                </div>
-            </div>
 
-            <div class="sx-card border-none shadow-sm flex flex-col md:flex-row items-center gap-8 p-12">
-                <div class="bg-blue-50 p-8 rounded-full">
-                    <i class="bi bi-car-front text-blue-600 text-6xl"></i>
-                </div>
-                <div class="text-center md:text-left">
-                    <h2 class="text-3xl font-black text-slate-800 mb-2">Central de Vehículos</h2>
-                    <p class="text-slate-500 max-w-md mb-6 font-medium">
-                        Mantén tu flota registrada para recibir asistencia inmediata. Gestiona marcas, modelos y placas de forma centralizada.
-                    </p>
-                    <button routerLink="/dashboard/cliente/vehiculos" class="btn-sx-primary px-8 py-3">
-                        Gestionar Mis Vehículos
-                    </button>
-                </div>
-            </div>
-        </div>
     </div>
 </div>

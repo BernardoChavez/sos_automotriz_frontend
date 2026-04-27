@@ -22,35 +22,77 @@ export const routes: Routes = [
         loadComponent: () => import('./modules/dashboard/dashboard').then(m => m.DashboardComponent)
       },
       {
+        path: 'notificaciones',
+        loadComponent: () => import('./modules/dashboard/notificaciones/notificaciones').then(m => m.NotificacionesFullComponent)
+      },
+      {
         path: 'cliente/vehiculos',
-        // Asegúrate de que el archivo se llame 'vehiculos.ts' y no 'vehiculos.component.ts'
         loadComponent: () => import('./modules/cliente/vehiculos/vehiculos').then(m => m.VehiculosComponent)
       },
-
-       {
-         path: 'admin/usuarios',
-         loadComponent: () => import('./modules/admin/usuarios/usuarios').then(m => m.UsuariosComponent)
-       },
-       {
-         path: 'admin/talleres',
-         loadComponent: () => import('./modules/admin/talleres/talleres').then(m => m.TalleresComponent)
-       },
-       {
-         path: 'admin/roles-permisos',
-         loadComponent: () => import('./modules/admin/roles-permisos/roles-permisos').then(m => m.RolesPermisosComponent)
-       },
-       {
-         path: 'taller/tecnicos',
-         loadComponent: () => import('./modules/taller/tecnicos/tecnicos').then(m => m.TecnicosComponent)
-       },
-       {
-         path: 'taller/configuracion',
-         loadComponent: () => import('./modules/taller/configuracion/configuracion').then(m => m.ConfiguracionTallerComponent)
-       },
-       {
-         path: 'perfil',
-         loadComponent: () => import('./modules/usuarios/perfil/perfil').then(m => m.PerfilComponent)
-       }
+      {
+        path: 'cliente/solicitar-ayuda',
+        loadComponent: () => import('./modules/cliente/solicitar-ayuda/solicitar-ayuda').then(m => m.SolicitarAyudaComponent)
+      },
+      {
+        path: 'cliente/rastreo/:id',
+        loadComponent: () => import('./modules/cliente/rastreo/rastreo').then(m => m.RastreoComponent)
+      },
+      {
+        path: 'cliente/historial',
+        loadComponent: () => import('./modules/cliente/historial/historial').then(m => m.HistorialComponent)
+      },
+      {
+        path: 'admin/usuarios',
+        loadComponent: () => import('./modules/admin/usuarios/usuarios').then(m => m.UsuariosComponent)
+      },
+      {
+        path: 'admin/talleres',
+        loadComponent: () => import('./modules/admin/talleres/talleres').then(m => m.TalleresComponent)
+      },
+      {
+        path: 'admin/roles-permisos',
+        loadComponent: () => import('./modules/admin/roles-permisos/roles-permisos').then(m => m.RolesPermisosComponent)
+      },
+      {
+        path: 'admin/auditoria',
+        loadComponent: () => import('./modules/admin/auditoria/auditoria').then(m => m.AuditoriaComponent)
+      },
+      {
+        path: 'taller/tecnicos',
+        loadComponent: () => import('./modules/taller/tecnicos/tecnicos').then(m => m.TecnicosComponent)
+      },
+      {
+        path: 'taller/despacho',
+        loadComponent: () => import('./modules/taller/despacho/despacho').then(m => m.DespachoComponent)
+      },
+      {
+        path: 'taller/configuracion',
+        loadComponent: () => import('./modules/taller/configuracion/configuracion').then(m => m.ConfiguracionTallerComponent)
+      },
+      {
+        path: 'taller/historial',
+        loadComponent: () => import('./modules/cliente/historial/historial').then(m => m.HistorialComponent)
+      },
+      {
+        path: 'cliente/cierre/:id',
+        loadComponent: () => import('./modules/cliente/cierre/cierre').then(m => m.CierreClienteComponent)
+      },
+      {
+        path: 'tecnico/mis-trabajos',
+        loadComponent: () => import('./modules/tecnico/mis-trabajos/mis-trabajos').then(m => m.MisTrabajosComponent)
+      },
+      {
+        path: 'tecnico/asistencia/:id',
+        loadComponent: () => import('./modules/tecnico/asistencia/asistencia').then(m => m.AsistenciaTecnicoComponent)
+      },
+      {
+        path: 'tecnico/historial',
+        loadComponent: () => import('./modules/cliente/historial/historial').then(m => m.HistorialComponent)
+      },
+      {
+        path: 'perfil',
+        loadComponent: () => import('./modules/usuarios/perfil/perfil').then(m => m.PerfilComponent)
+      }
     ]
   },
   { path: '', redirectTo: 'auth/login', pathMatch: 'full' },

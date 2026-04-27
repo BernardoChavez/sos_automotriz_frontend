@@ -26,6 +26,13 @@ export class PerfilComponent implements OnInit {
   }
 
   guardar() {
+    if (this.authService.currentUser?.rol !== 'super_admin') {
+      if (!this.user.nombre || !this.user.email || !this.user.telefono) {
+        alert('Tu nombre, correo y teléfono son obligatorios para mantener tu cuenta activa.');
+        return;
+      }
+    }
+    
     this.loading = true;
     const payload = { ...this.user };
     if (!payload.password) delete payload.password; // No enviar si está vacío

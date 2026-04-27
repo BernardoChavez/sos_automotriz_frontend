@@ -18,9 +18,39 @@ export class RegisterComponent {
   loading = false;
   errorMessage = '';
 
+  get passwordValidations() {
+    const pw = this.user.password || '';
+    return {
+      min: pw.length >= 6,
+      upper: /[A-Z]/.test(pw),
+      lower: /[a-z]/.test(pw),
+      num: /[0-9]/.test(pw),
+      spec: /[!@#$%^&*(),.?":{}|<>]/.test(pw)
+    };
+  }
+
+  get isPasswordStrong(): boolean {
+    const v = this.passwordValidations;
+    return v.min && v.upper && v.lower && v.num && v.spec;
+  }
+
   onRegister() {
     this.loading = true;
     this.errorMessage = '';
+
+    // 1. Validar campos obligatorios
+    if (!this.user.nombre || !this.user.email || !this.user.telefono || !this.user.password) {
+      this.errorMessage = 'Todos los campos son obligatorios';
+      this.loading = false;
+      return;
+    }
+
+    // 2. Validar fortaleza de contraseña
+    if (!this.isPasswordStrong) {
+      this.errorMessage = 'La contraseña no cumple con todos los requisitos de seguridad';
+      this.loading = false;
+      return;
+    }
     
     this.authService.register(this.user).subscribe({
       next: () => {

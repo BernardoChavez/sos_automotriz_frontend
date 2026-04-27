@@ -1,53 +1,62 @@
-<div class="animate-in">
-    <div class="mb-8">
-        <h1 class="text-2xl font-extrabold text-slate-800">Seguridad de Acceso</h1>
-        <p class="text-slate-500 font-medium">Matriz granular de permisos y visibilidad</p>
-    </div>
+<div class="p-8 max-w-7xl mx-auto animate-in">
+    <header class="mb-10">
+        <h1 class="text-4xl font-black text-slate-800 italic mb-2">CONTROL DE <span class="text-blue-600">ACCESO</span>
+        </h1>
+        <p class="text-slate-500 font-medium">Gestiona la matriz de permisos y seguridad de la plataforma.</p>
+    </header>
 
-    <div class="sx-card p-0 overflow-hidden shadow-sm border-slate-200">
+    <div class="bg-white rounded-[2.5rem] shadow-2xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="sx-table">
+            <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr>
-                        <th class="min-w-[280px]">Funcionalidad del Sistema</th>
-                        <th class="text-center" *ngFor="let rol of roles">
-                            <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">{{rol.replace('_', ' ')}}</span>
+                    <tr class="bg-slate-50">
+                        <th
+                            class="p-6 text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
+                            Permiso / Funcionalidad</th>
+                        @for (rol of roles; track rol) {
+                        <th
+                            class="p-6 text-xs font-black text-slate-800 uppercase tracking-widest border-b border-slate-100 text-center">
+                            <span
+                                class="px-3 py-1 bg-white rounded-full shadow-sm border border-slate-200">{{rol}}</span>
                         </th>
+                        }
                     </tr>
                 </thead>
-                <tbody>
-                    <tr *ngFor="let p of matriz">
-                        <td>
-                            <div class="flex items-center gap-3 py-1">
-                                <div class="w-1.5 h-6 bg-blue-600 rounded-full"></div>
-                                <div>
-                                    <div class="font-bold text-slate-800 leading-none">{{p.descripcion}}</div>
-                                    <code class="text-[10px] text-slate-400 font-bold">{{p.codigo}}</code>
+                <tbody class="divide-y divide-slate-50">
+                    @for (p of matriz; track p.id) {
+                    <tr class="hover:bg-slate-50/50 transition-colors group">
+                        <td class="p-6">
+                            <div class="font-bold text-slate-800 mb-0.5">{{p.codigo}}</div>
+                            <div class="text-[11px] text-slate-400 font-medium uppercase tracking-tight">
+                                {{p.descripcion}}</div>
+                        </td>
+                        @for (rol of roles; track rol) {
+                        <td class="p-6 text-center">
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" [checked]="p[rol]" (change)="toggle(rol, p.id)"
+                                    class="sr-only peer">
+                                <div
+                                    class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
                                 </div>
-                            </div>
+                            </label>
                         </td>
-                        <td class="text-center" *ngFor="let rol of roles">
-                            <div class="flex justify-center">
-                                <input class="form-check-input w-10 h-5 cursor-pointer" type="checkbox" 
-                                       [checked]="p[rol]" 
-                                       (change)="toggle(rol, p.id)">
-                            </div>
-                        </td>
+                        }
                     </tr>
+                    }
                 </tbody>
             </table>
         </div>
     </div>
 
-    <div class="mt-8 p-6 rounded-2xl bg-slate-100/50 border border-slate-200 flex items-start gap-4">
-        <div class="bg-blue-600 p-2 rounded-lg text-white">
-            <i class="bi bi-info-circle-fill"></i>
+    <!-- Info Footer -->
+    <div class="mt-8 p-6 bg-amber-50 rounded-3xl border border-amber-100 flex items-center gap-4">
+        <div class="bg-amber-400 text-white p-3 rounded-2xl shadow-lg">
+            <i class="bi bi-shield-lock-fill text-2xl"></i>
         </div>
         <div>
-            <h6 class="font-black text-slate-800 mb-1 uppercase tracking-tight">Arquitectura de Seguridad Reactiva</h6>
-            <p class="text-slate-500 text-sm font-medium mb-0 leading-relaxed">
-                Los cambios en los permisos se propagan instantáneamente a través de los guards de Angular. No es necesario reiniciar el servidor, sin embargo, los usuarios conectados deberán refrescar su sesión para ver los cambios aplicados en su interfaz.
-            </p>
+            <h4 class="text-amber-800 font-bold mb-0.5">Seguridad del Sistema</h4>
+            <p class="text-sm text-amber-700 font-medium mb-0">Los cambios en esta matriz afectan los permisos de los
+                usuarios en tiempo real. Actúa con precaución.</p>
         </div>
     </div>
 </div>
